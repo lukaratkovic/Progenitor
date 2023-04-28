@@ -2,8 +2,9 @@ package model;
 
 public class Progenitor {
     public static class Builder{
-        public Builder(){
-
-        }
+        private int populationSize, maxGenerations, tournamentK;
+        
     }
+
+    private Progenitor(){}
 }
