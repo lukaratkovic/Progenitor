@@ -11,4 +11,8 @@ public class Utils {
     public static Boolean getRandBool(){
         return rand.nextBoolean();
     }
+
+    public static Integer getRandInteger(int lowerBound, int upperBound){
+        return rand.nextInt(lowerBound, upperBound);
+    }
 }

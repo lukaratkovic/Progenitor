@@ -2,9 +2,9 @@ import model.*;
 
 public class Main {
     public static void main(String[] args) {
-        Gene gene = new BinaryGene(1);
-        System.out.println("Initial value: "+gene.value);
+        IntegerValueGene gene = new IntegerValueGene(0, 10, 1);
+        System.out.println(gene.value);
         gene.mutate();
-        System.out.println("Value after mutation: "+gene.value);
+        System.out.println(gene.value);
     }
 }
