@@ -80,6 +80,7 @@ public class Progenitor {
             p.selectionMethod = selectionMethod;
             p.tournamentK = tournamentK;
             p.elitismCount = elitismCount;
+            p.fitness = fitness;
             return p;
         }
     }
@@ -100,8 +101,6 @@ public class Progenitor {
     private Progenitor(){}
 
     public void run(){
-        //TODO: Implement run method
-
         // Create initial population with random values
         List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
@@ -114,7 +113,40 @@ public class Progenitor {
         // Run genetic algorithm
         while(!exitCondition){
             List<Chromosome> newPopulation = new ArrayList<>();
-            
+
+            // Elitism
+            population.sort((c1, c2) -> {
+                if(fitness.apply(c1) < fitness.apply(c2)) return 1;
+                else return -1;
+            });
+            population.subList(0, elitismCount).forEach(c -> newPopulation.add(c));
+
+            // Fill new population with new chromosomes
+            while(newPopulation.size() < populationSize){
+                // Select parents TODO: Implement selection methods
+                Chromosome parent1 = switch(selectionMethod){
+                    case TOURNAMENT -> tournament(population);
+                    case ROULETTE -> roulette(population);
+                    case RANK -> rank(population);
+                };
+                population.remove(parent1);
+                Chromosome parent2 = switch(selectionMethod){
+                    case TOURNAMENT -> tournament(population);
+                    case ROULETTE -> roulette(population);
+                    case RANK -> rank(population);
+                };
+
+
+                // TODO: Use crossover to create new chromosome from parents
+                // TODO: Undergo mutation randomly
+                // TODO: Add new chromosome to new population
+            }
+
+            population = newPopulation;
+            generation++;
+
+            //TODO: Remove this, for single iteration testing only
+            exitCondition = true;
         }
     }
 }
