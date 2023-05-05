@@ -2,6 +2,8 @@ package model;
 
 import enums.*;
 
+import java.util.function.Function;
+
 public class Progenitor {
     public static class Builder{
         private int populationSize, maxGenerations=100, tournamentK=1, elitismCount=0;
@@ -9,6 +11,7 @@ public class Progenitor {
         private EndCondition endCondition = EndCondition.FITNESS_REACHED;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
         private SelectionMethod selectionMethod = SelectionMethod.RANK;
+        private Function<Chromosome, Double> fitness;
 
         public Builder(int populationSize){
             this.populationSize = populationSize;
@@ -53,6 +56,11 @@ public class Progenitor {
             return this;
         }
 
+        public Builder fitness(Function<Chromosome, Double> fitness){
+            this.fitness = fitness;
+            return this;
+        }
+
         public Progenitor build(){
             Progenitor p = new Progenitor();
             p.populationSize = populationSize;
@@ -73,6 +81,8 @@ public class Progenitor {
     private EndCondition endCondition;
     private CrossoverMethod crossoverMethod;
     private SelectionMethod selectionMethod;
+
+    private Function<Chromosome, Double> fitness;
 
     // Internal parameters
     private int generation = 0;
