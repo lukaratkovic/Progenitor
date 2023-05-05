@@ -1,6 +1,7 @@
 package model;
 
 import enums.*;
+import helpers.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,4 +150,21 @@ public class Progenitor {
             exitCondition = true;
         }
     }
+
+    private Chromosome tournament(List<Chromosome> population){
+        List<Chromosome> candidates = new ArrayList<>();
+        // Select K random distinct chromosomes
+        Utils.rand.ints(0, population.size()-1)
+                .distinct()
+                .limit(tournamentK)
+                .forEach(i -> candidates.add(population.get(i)));
+        return candidates.stream()
+                .max((c1,c2) -> {
+                    if(fitness.apply(c1) < fitness.apply(c2)) return 1;
+                    else return -1;
+                })
+                .get();
+    }
+
+    
 }
