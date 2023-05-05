@@ -7,6 +7,10 @@ public abstract class Gene<T> {
 
     public abstract Gene getInstance();
 
+    public T getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return "Gene{" +

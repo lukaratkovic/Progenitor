@@ -24,6 +24,10 @@ public class Chromosome<T extends Gene> {
         return length;
     }
 
+    public List<T> getGenes() {
+        return genes;
+    }
+
     @Override
     public String toString() {
         return "Chromosome{" +
