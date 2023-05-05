@@ -2,19 +2,27 @@ package model;
 
 import enums.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class Progenitor {
     public static class Builder{
-        private int populationSize, maxGenerations=100, tournamentK=1, elitismCount=0;
+        private Chromosome chromosome;
+        private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0;
         private double mutationProbability=0.01;
         private EndCondition endCondition = EndCondition.FITNESS_REACHED;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
         private SelectionMethod selectionMethod = SelectionMethod.RANK;
         private Function<Chromosome, Double> fitness;
 
-        public Builder(int populationSize){
+        public Builder(Chromosome chromosome){
+            this.chromosome = chromosome;
+        }
+
+        public Builder populationSize(int populationSize) {
             this.populationSize = populationSize;
+            return this;
         }
 
         public Builder endCondition(EndCondition endCondition){
@@ -63,6 +71,7 @@ public class Progenitor {
 
         public Progenitor build(){
             Progenitor p = new Progenitor();
+            p.chromosome = chromosome;
             p.populationSize = populationSize;
             p.maxGenerations = maxGenerations;
             p.endCondition = endCondition;
@@ -76,6 +85,7 @@ public class Progenitor {
     }
 
     // User-defined parameters
+    private Chromosome chromosome;
     private int populationSize, maxGenerations, tournamentK, elitismCount;
     private double mutationProbability;
     private EndCondition endCondition;
@@ -91,5 +101,20 @@ public class Progenitor {
 
     public void run(){
         //TODO: Implement run method
+
+        // Create initial population with random values
+        List<Chromosome> population = new ArrayList<>();
+        for (int i = 0; i < populationSize; i++) {
+            population.add(chromosome.getRandom());
+        }
+
+        int generation = 1;
+        boolean exitCondition = false;
+
+        // Run genetic algorithm
+        while(!exitCondition){
+            List<Chromosome> newPopulation = new ArrayList<>();
+            
+        }
     }
 }

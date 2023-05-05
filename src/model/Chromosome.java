@@ -6,7 +6,9 @@ import java.util.stream.IntStream;
 
 public class Chromosome<T extends Gene> {
     private List<T> genes;
+    private T geneInstance;
     private int length;
+
 
     public Chromosome(List<T> genes){
         this.genes = genes;
@@ -15,9 +17,14 @@ public class Chromosome<T extends Gene> {
 
     public Chromosome(int length, T geneInstance) {
         this.length = length;
+        this.geneInstance = geneInstance;
         this.genes = (List<T>) IntStream.range(0, length)
                 .mapToObj(i -> geneInstance.getInstance())
                 .collect(Collectors.toList());
+    }
+
+    public Chromosome getRandom(){
+        return new Chromosome(length, geneInstance);
     }
 
     public int getLength() {
