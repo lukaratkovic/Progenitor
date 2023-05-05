@@ -39,4 +39,9 @@ public class BinaryGene extends Gene<Boolean> {
         value = !value;
         return this;
     }
+
+    @Override
+    public Gene getInstance() {
+        return new BinaryGene();
+    }
 }

@@ -20,4 +20,9 @@ public class IntegerValueGene extends ValueGene {
         value = Utils.getRandInteger((Integer) lowerBound, (Integer) upperBound);
         return this;
     }
+
+    @Override
+    public Gene getInstance() {
+        return new IntegerValueGene((Integer) lowerBound, (Integer) upperBound);
+    }
 }
