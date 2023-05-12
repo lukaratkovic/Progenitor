@@ -5,6 +5,7 @@ import helpers.Utils;
 
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -150,6 +151,21 @@ public class Progenitor {
             //TODO: Remove this, for single iteration testing only
             exitCondition = true;
         }
+    }
+
+    private Chromosome rank(List<Chromosome> population) {
+        population.sort((c1,c2) -> {
+            if(fitness.apply(c1) < fitness.apply(c2)) return 1;
+            else return -1;
+        });
+        double current = 0, randomValue = Utils.getRandDouble(0,1);
+        for (int i=0; i<populationSize;i++){
+            current += ((double)(populationSize-i)/(populationSize*(populationSize+1)/2));
+            if(randomValue < current)
+                return population.get(i);
+        }
+        throw new RuntimeException("Roulette method of Progenitor class exceeded its bounds." +
+                "This is a library error and should not occur in implementation.");
     }
 
     private Chromosome roulette(List<Chromosome> population) {
