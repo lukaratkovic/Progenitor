@@ -15,4 +15,8 @@ public class Utils {
     public static Integer getRandInteger(int lowerBound, int upperBound){
         return rand.nextInt(lowerBound, upperBound);
     }
+
+    public static Double getRandDouble(double lowerBound, double upperBound){
+        return rand.nextDouble(lowerBound, upperBound);
+    }
 }

@@ -3,6 +3,7 @@ package model;
 import enums.*;
 import helpers.Utils;
 
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -149,6 +150,19 @@ public class Progenitor {
             //TODO: Remove this, for single iteration testing only
             exitCondition = true;
         }
+    }
+
+    private Chromosome roulette(List<Chromosome> population) {
+        double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
+        double current = 0, rouletteResult = Utils.getRandDouble(0, populationFitness);
+        for(Chromosome c: population){
+            current += fitness.apply(c);
+            if(rouletteResult < current){
+                return c;
+            }
+        }
+        throw new RuntimeException("Roulette method of Progenitor class exceeded its bounds." +
+                "This is a library error and should not occur in implementation.");
     }
 
     private Chromosome tournament(List<Chromosome> population){
