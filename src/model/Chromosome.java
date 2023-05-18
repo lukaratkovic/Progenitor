@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Chromosome<T extends Gene> {
-    private List<T> genes;
+    private final List<T> genes;
     private T geneInstance;
-    private int length;
+    private final int length;
 
 
     public Chromosome(List<T> genes){
@@ -23,7 +23,7 @@ public class Chromosome<T extends Gene> {
                 .collect(Collectors.toList());
     }
 
-    public Chromosome getRandom(){
+    public Chromosome<T> getRandom(){
         return new Chromosome(length, geneInstance);
     }
 

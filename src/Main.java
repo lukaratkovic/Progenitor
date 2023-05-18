@@ -12,10 +12,10 @@ public class Main {
                 new Chromosome<>(10, intgene);
 
         Progenitor progenitor = new Progenitor.Builder(c)
-                .populationSize(3)
+                .populationSize(100)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(100)
-                .crossoverMethod(CrossoverMethod.ONE_POINT)
+                .maxGenerations(1)
+                .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.RANK)
                 .elitismCount(2)

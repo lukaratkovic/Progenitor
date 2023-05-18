@@ -1,11 +1,12 @@
 package model;
 
-import enums.*;
+import enums.CrossoverMethod;
+import enums.EndCondition;
+import enums.SelectionMethod;
 import helpers.Utils;
 
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -122,27 +123,32 @@ public class Progenitor {
                 if(fitness.apply(c1) < fitness.apply(c2)) return 1;
                 else return -1;
             });
-            population.subList(0, elitismCount).forEach(c -> newPopulation.add(c));
+            newPopulation.addAll(population.subList(0, elitismCount));
 
             // Fill new population with new chromosomes
             while(newPopulation.size() < populationSize){
-                // Select parents TODO: Implement selection methods
                 Chromosome parent1 = switch(selectionMethod){
                     case TOURNAMENT -> tournament(population);
                     case ROULETTE -> roulette(population);
                     case RANK -> rank(population);
                 };
-                population.remove(parent1);
-                Chromosome parent2 = switch(selectionMethod){
-                    case TOURNAMENT -> tournament(population);
-                    case ROULETTE -> roulette(population);
-                    case RANK -> rank(population);
-                };
-
-
+                Chromosome parent2 = parent1;
+                while(parent2 == parent1){
+                    parent2 = switch (selectionMethod) {
+                        case TOURNAMENT -> tournament(population);
+                        case ROULETTE -> roulette(population);
+                        case RANK -> rank(population);
+                    };
+                }
                 // TODO: Use crossover to create new chromosome from parents
+                Chromosome child = switch(crossoverMethod){
+                    case ONE_POINT -> onePointCrossover(parent1, parent2);
+                    case TWO_POINT -> twoPointCrossover(parent1, parent2);
+                    case UNIFORM -> uniformCrossover(parent1, parent2);
+                };
                 // TODO: Undergo mutation randomly
                 // TODO: Add new chromosome to new population
+                newPopulation.add(child);
             }
 
             population = newPopulation;
@@ -153,6 +159,7 @@ public class Progenitor {
         }
     }
 
+    //TODO: Fix rank selection
     private Chromosome rank(List<Chromosome> population) {
         population.sort((c1,c2) -> {
             if(fitness.apply(c1) < fitness.apply(c2)) return 1;
@@ -168,8 +175,10 @@ public class Progenitor {
                 "This is a library error and should not occur in implementation.");
     }
 
+    //TODO: Fix roulette selection
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
+        System.out.println(populationFitness);
         double current = 0, rouletteResult = Utils.getRandDouble(0, populationFitness);
         for(Chromosome c: population){
             current += fitness.apply(c);
@@ -196,5 +205,31 @@ public class Progenitor {
                 .get();
     }
 
-    
+    private Chromosome onePointCrossover(Chromosome p1, Chromosome p2){
+        int crossoverPoint = Utils.getRandInteger(1, chromosome.getLength());
+        List<Gene> genes = new ArrayList<Gene>(p1.getGenes().subList(0, crossoverPoint));
+        genes.addAll(p2.getGenes().subList(crossoverPoint, chromosome.getLength()));
+        return new Chromosome(genes);
+    }
+
+    private Chromosome twoPointCrossover(Chromosome p1, Chromosome p2){
+        int[] crossoverPoints = Utils.rand.ints(1, chromosome.getLength())
+                .distinct()
+                .limit(2)
+                .sorted()
+                .toArray();
+        List<Gene> genes = new ArrayList<>(p1.getGenes().subList(0, crossoverPoints[0]));
+        genes.addAll(p2.getGenes().subList(crossoverPoints[0], crossoverPoints[1]));
+        genes.addAll(p1.getGenes().subList(crossoverPoints[1], chromosome.getLength()));
+        return new Chromosome(genes);
+    }
+
+    private Chromosome uniformCrossover(Chromosome p1, Chromosome p2){
+        List<Gene> genes = new ArrayList<>();
+        for (int i = 0; i < chromosome.getLength(); i++) {
+            Chromosome targetParent = Utils.getRandBool() ? p1 : p2;
+            genes.add((Gene) targetParent.getGenes().get(i));
+        }
+        return new Chromosome(genes);
+    }
 }
