@@ -7,6 +7,7 @@ import helpers.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -111,7 +112,7 @@ public class Progenitor {
             population.add(chromosome.getRandom());
         }
 
-        int generation = 1;
+        int generation = 0;
         boolean exitCondition = false;
 
         // Run genetic algorithm
@@ -121,7 +122,8 @@ public class Progenitor {
             // Elitism
             population.sort((c1, c2) -> {
                 if(fitness.apply(c1) < fitness.apply(c2)) return 1;
-                else return -1;
+                else if(fitness.apply(c1) > fitness.apply(c2)) return -1;
+                else return 0;
             });
             newPopulation.addAll(population.subList(0, elitismCount));
 
@@ -149,11 +151,21 @@ public class Progenitor {
                 newPopulation.add(child);
             }
 
+            Chromosome best = newPopulation.stream().max((c1, c2) -> {
+                if(fitness.apply(c1) > fitness.apply(c2)) return 1;
+                else if(fitness.apply(c1) < fitness.apply(c2)) return -1;
+                else return 0;
+            }).get();
+
             population = newPopulation;
             generation++;
 
-            //TODO: Remove this, for single iteration testing only
-            exitCondition = true;
+            System.out.println("Finished generation "+(generation-1));
+            System.out.println("Best fitness: "+fitness.apply(best));
+
+            //TODO: Implement other end conditions
+            if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations)
+                exitCondition=true;
         }
     }
 
@@ -161,13 +173,15 @@ public class Progenitor {
     private Chromosome rank(List<Chromosome> population) {
         population.sort((c1,c2) -> {
             if(fitness.apply(c1) < fitness.apply(c2)) return 1;
-            else return -1;
+            else if(fitness.apply(c2) > fitness.apply(c1)) return -1;
+            else return 0;
         });
         double current = 0, randomValue = Utils.getRandDouble(0,1);
         for (int i=0; i<populationSize;i++){
             current += ((double)(populationSize-i)/(populationSize*(populationSize+1)/2));
-            if(randomValue < current)
+            if(randomValue < current) {
                 return population.get(i);
+            }
         }
         throw new RuntimeException("Roulette method of Progenitor class exceeded its bounds." +
                 "This is a library error and should not occur in implementation.");
