@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Chromosome<T extends Gene> {
-    private final List<T> genes;
+    private List<T> genes;
     private T geneInstance;
     private final int length;
 

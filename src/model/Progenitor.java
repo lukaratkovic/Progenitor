@@ -140,14 +140,12 @@ public class Progenitor {
                         case RANK -> rank(population);
                     };
                 }
-                // TODO: Use crossover to create new chromosome from parents
                 Chromosome child = switch(crossoverMethod){
                     case ONE_POINT -> onePointCrossover(parent1, parent2);
                     case TWO_POINT -> twoPointCrossover(parent1, parent2);
                     case UNIFORM -> uniformCrossover(parent1, parent2);
                 };
-                // TODO: Undergo mutation randomly
-                // TODO: Add new chromosome to new population
+                mutate(child);
                 newPopulation.add(child);
             }
 
@@ -231,5 +229,13 @@ public class Progenitor {
             genes.add((Gene) targetParent.getGenes().get(i));
         }
         return new Chromosome(genes);
+    }
+
+    private void mutate(Chromosome chromosome){
+        for (Gene gene : (List<Gene>) chromosome.getGenes()) {
+            if(Utils.getRandInteger(0, 100) < mutationProbability*100){
+                gene.mutate();
+            }
+        }
     }
 }
