@@ -2,11 +2,11 @@ package helpers;
 
 import java.util.Random;
 
-public class Utils {
+public class Rand {
     public static Random rand;
-    private static Utils instance = new Utils();
-    private Utils(){rand = new Random();}
-    public static Utils getInstance(){return instance;}
+    private static Rand instance = new Rand();
+    private Rand(){rand = new Random();}
+    public static Rand getInstance(){return instance;}
 
     public static Boolean getRandBool(){
         return rand.nextBoolean();

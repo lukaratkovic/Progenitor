@@ -7,6 +7,8 @@ public abstract class Gene<T> {
 
     public abstract Gene getInstance();
 
+    public abstract Gene clone();
+
     public T getValue() {
         return value;
     }

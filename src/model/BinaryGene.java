@@ -1,13 +1,13 @@
 package model;
 
-import helpers.Utils;
+import helpers.Rand;
 
 public class BinaryGene extends Gene<Boolean> {
     /***
      * Initializes a new binary gene with random value
      */
     public BinaryGene() {
-        this.value = Utils.getRandBool();
+        this.value = Rand.getRandBool();
     }
 
     /***
@@ -43,5 +43,10 @@ public class BinaryGene extends Gene<Boolean> {
     @Override
     public Gene getInstance() {
         return new BinaryGene();
+    }
+
+    @Override
+    public Gene clone() {
+        return new BinaryGene(value);
     }
 }

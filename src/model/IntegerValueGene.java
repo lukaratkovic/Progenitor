@@ -1,6 +1,6 @@
 package model;
 
-import helpers.Utils;
+import helpers.Rand;
 
 public class IntegerValueGene extends ValueGene {
     /**
@@ -9,7 +9,7 @@ public class IntegerValueGene extends ValueGene {
      * @param upperBound highest allowed value, exclusive
      */
     public IntegerValueGene(Integer lowerBound, Integer upperBound) {
-        super(lowerBound, upperBound, Utils.getRandInteger(lowerBound, upperBound));
+        super(lowerBound, upperBound, Rand.getRandInteger(lowerBound, upperBound));
     }
 
     public IntegerValueGene(Integer lowerBound, Integer upperBound, Integer value){
@@ -17,12 +17,17 @@ public class IntegerValueGene extends ValueGene {
     }
     @Override
     public Gene mutate() {
-        value = Utils.getRandInteger((Integer) lowerBound, (Integer) upperBound);
+        value = Rand.getRandInteger((Integer) lowerBound, (Integer) upperBound);
         return this;
     }
 
     @Override
     public Gene getInstance() {
         return new IntegerValueGene((Integer) lowerBound, (Integer) upperBound);
+    }
+
+    @Override
+    public Gene clone() {
+        return new IntegerValueGene((Integer) lowerBound, (Integer) upperBound, (Integer) value);
     }
 }

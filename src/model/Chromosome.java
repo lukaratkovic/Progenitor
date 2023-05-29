@@ -23,6 +23,10 @@ public class Chromosome<T extends Gene> {
                 .collect(Collectors.toList());
     }
 
+    public Chromosome clone(){
+        return new Chromosome(genes);
+    }
+
     public Chromosome<T> getRandom(){
         return new Chromosome(length, geneInstance);
     }

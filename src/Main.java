@@ -14,7 +14,7 @@ public class Main {
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(1)
+                .maxGenerations(1000)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.RANK)

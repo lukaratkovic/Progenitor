@@ -3,13 +3,12 @@ package model;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
-import helpers.Utils;
+import helpers.Rand;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Progenitor {
     public static class Builder{
@@ -125,7 +124,8 @@ public class Progenitor {
                 else if(fitness.apply(c1) > fitness.apply(c2)) return -1;
                 else return 0;
             });
-            newPopulation.addAll(population.subList(0, elitismCount));
+            newPopulation.addAll(population.subList(0, elitismCount).stream()
+                    .map(c -> c.clone()).collect(Collectors.toList()));
 
             // Fill new population with new chromosomes
             while(newPopulation.size() < populationSize){
@@ -166,6 +166,8 @@ public class Progenitor {
             //TODO: Implement other end conditions
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations)
                 exitCondition=true;
+
+            System.out.println("Best: "+best);
         }
     }
 
@@ -176,7 +178,7 @@ public class Progenitor {
             else if(fitness.apply(c2) > fitness.apply(c1)) return -1;
             else return 0;
         });
-        double current = 0, randomValue = Utils.getRandDouble(0,1);
+        double current = 0, randomValue = Rand.getRandDouble(0,1);
         for (int i=0; i<populationSize;i++){
             current += ((double)(populationSize-i)/(populationSize*(populationSize+1)/2));
             if(randomValue < current) {
@@ -191,7 +193,7 @@ public class Progenitor {
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
         System.out.println(populationFitness);
-        double current = 0, rouletteResult = Utils.getRandDouble(0, populationFitness);
+        double current = 0, rouletteResult = Rand.getRandDouble(0, populationFitness);
         for(Chromosome c: population){
             current += fitness.apply(c);
             if(rouletteResult < current){
@@ -205,7 +207,7 @@ public class Progenitor {
     private Chromosome tournament(List<Chromosome> population){
         List<Chromosome> candidates = new ArrayList<>();
         // Select K random distinct chromosomes
-        Utils.rand.ints(0, population.size()-1)
+        Rand.rand.ints(0, population.size()-1)
                 .distinct()
                 .limit(tournamentK)
                 .forEach(i -> candidates.add(population.get(i)));
@@ -218,14 +220,14 @@ public class Progenitor {
     }
 
     private Chromosome onePointCrossover(Chromosome p1, Chromosome p2){
-        int crossoverPoint = Utils.getRandInteger(1, chromosome.getLength());
+        int crossoverPoint = Rand.getRandInteger(1, chromosome.getLength());
         List<Gene> genes = new ArrayList<Gene>(p1.getGenes().subList(0, crossoverPoint));
         genes.addAll(p2.getGenes().subList(crossoverPoint, chromosome.getLength()));
         return new Chromosome(genes);
     }
 
     private Chromosome twoPointCrossover(Chromosome p1, Chromosome p2){
-        int[] crossoverPoints = Utils.rand.ints(1, chromosome.getLength())
+        int[] crossoverPoints = Rand.rand.ints(1, chromosome.getLength())
                 .distinct()
                 .limit(2)
                 .sorted()
@@ -239,15 +241,16 @@ public class Progenitor {
     private Chromosome uniformCrossover(Chromosome p1, Chromosome p2){
         List<Gene> genes = new ArrayList<>();
         for (int i = 0; i < chromosome.getLength(); i++) {
-            Chromosome targetParent = Utils.getRandBool() ? p1 : p2;
-            genes.add((Gene) targetParent.getGenes().get(i));
+            Chromosome targetParent = Rand.getRandBool() ? p1 : p2;
+            Gene gene = (Gene) targetParent.getGenes().get(i);
+            genes.add(gene.clone());
         }
         return new Chromosome(genes);
     }
 
     private void mutate(Chromosome chromosome){
         for (Gene gene : (List<Gene>) chromosome.getGenes()) {
-            if(Utils.getRandInteger(0, 100) < mutationProbability*100){
+            if(Rand.getRandInteger(0, 100) < mutationProbability*100){
                 gene.mutate();
             }
         }
