@@ -18,7 +18,8 @@ public class BinaryExample {
                 .targetFitness(c.getLength())
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.RANK)
+                .selectionMethod(SelectionMethod.TOURNAMENT)
+                .tournamentK(5)
                 .elitismCount(2)
                 .fitness(BinaryExample::fitness)
                 .build();
