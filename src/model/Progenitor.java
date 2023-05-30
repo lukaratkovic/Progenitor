@@ -96,11 +96,7 @@ public class Progenitor {
     private EndCondition endCondition;
     private CrossoverMethod crossoverMethod;
     private SelectionMethod selectionMethod;
-
     private Function<Chromosome, Double> fitness;
-
-    // Internal parameters
-    private int generation = 0;
 
     private Progenitor(){}
 
@@ -119,11 +115,7 @@ public class Progenitor {
             List<Chromosome> newPopulation = new ArrayList<>();
 
             // Elitism
-            population.sort((c1, c2) -> {
-                if(fitness.apply(c1) < fitness.apply(c2)) return 1;
-                else if(fitness.apply(c1) > fitness.apply(c2)) return -1;
-                else return 0;
-            });
+            population.sort((c1, c2) -> fitness.apply(c2).compareTo(fitness.apply(c1)));
             newPopulation.addAll(population.subList(0, elitismCount).stream()
                     .map(Chromosome::clone).toList());
 
@@ -151,11 +143,7 @@ public class Progenitor {
                 newPopulation.add(child);
             }
 
-            Chromosome best = newPopulation.stream().max((c1, c2) -> {
-                if(fitness.apply(c1) > fitness.apply(c2)) return 1;
-                else if(fitness.apply(c1) < fitness.apply(c2)) return -1;
-                else return 0;
-            }).get();
+            Chromosome best = newPopulation.stream().max((c1, c2) -> fitness.apply(c1).compareTo(fitness.apply(c2))).get();
 
             population = newPopulation;
             generation++;
@@ -172,11 +160,7 @@ public class Progenitor {
     }
 
     private Chromosome rank(List<Chromosome> population) {
-        population.sort((c1,c2) -> {
-            if(fitness.apply(c1) < fitness.apply(c2)) return 1;
-            else if(fitness.apply(c2) > fitness.apply(c1)) return -1;
-            else return 0;
-        });
+        population.sort((c1,c2) -> fitness.apply(c2).compareTo(fitness.apply(c1)));
         double current = 0, randomValue = Rand.getRandDouble(0,1);
         for (int i=0; i<populationSize;i++){
             current += ((double)(populationSize-i)/(populationSize*(populationSize+1)/2));
@@ -209,10 +193,7 @@ public class Progenitor {
                 .limit(tournamentK)
                 .forEach(i -> candidates.add(population.get(i)));
         return candidates.stream()
-                .max((c1,c2) -> {
-                    if(fitness.apply(c1) < fitness.apply(c2)) return 1;
-                    else return -1;
-                })
+                .max((c1, c2) -> fitness.apply(c1).compareTo(fitness.apply(c2)))
                 .get();
     }
 
