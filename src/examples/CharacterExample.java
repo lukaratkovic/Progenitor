@@ -8,6 +8,7 @@ import model.Chromosome;
 import model.Progenitor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CharacterExample {
     public static void main(String[] args) {
@@ -29,6 +30,11 @@ public class CharacterExample {
                 .build();
 
         progenitor.run();
+        Chromosome best = progenitor.getBest();
+        String result = best.getGenes().stream()
+                .map(g -> g.getValue().toString())
+                .collect(Collectors.joining());
+        System.out.println(result);
     }
 
     public static Double fitness(Chromosome c){

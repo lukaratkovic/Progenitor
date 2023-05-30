@@ -9,13 +9,13 @@ import model.Progenitor;
 
 public class IntegerExample {
     public static void main(String[] args) {
-        IntegerValueGene templateGene = new IntegerValueGene(0, 10);
+        IntegerValueGene templateGene = new IntegerValueGene(1, 11);
         Chromosome c = new Chromosome(10, templateGene);
 
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.TARGET_FITNESS)
-                .targetFitness(90)
+                .targetFitness(100)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.RANK)
