@@ -3,6 +3,7 @@ package model;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
+import exceptions.RunNotCompletedException;
 import helpers.Rand;
 
 import java.util.ArrayList;
@@ -103,6 +104,8 @@ public class Progenitor {
     private SelectionMethod selectionMethod;
     private Function<Chromosome, Double> fitness;
 
+    private Chromosome bestChromosome;
+
     private Progenitor(){}
 
     public void run(){
@@ -161,7 +164,14 @@ public class Progenitor {
                 exitCondition=true;
 
             System.out.println(best);
+            bestChromosome = best;
         }
+    }
+
+    public Chromosome getBest(){
+        if(bestChromosome == null)
+            throw new RunNotCompletedException("Best chromosome is null. Ensure that you have run the Progenitor.run() method first.");
+        return bestChromosome;
     }
 
     private Chromosome rank(List<Chromosome> population) {
