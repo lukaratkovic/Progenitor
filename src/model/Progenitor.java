@@ -159,6 +159,8 @@ public class Progenitor {
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
             || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
                 exitCondition=true;
+
+            System.out.println(best);
         }
     }
 

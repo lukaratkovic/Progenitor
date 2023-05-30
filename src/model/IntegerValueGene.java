@@ -2,7 +2,7 @@ package model;
 
 import helpers.Rand;
 
-public class IntegerValueGene extends ValueGene {
+public class IntegerValueGene extends NumericValueGene<Integer> {
     /**
      * Initializes a new binary gene with random value in range
      * @param lowerBound lowest allowed value, inclusive
@@ -17,17 +17,17 @@ public class IntegerValueGene extends ValueGene {
     }
     @Override
     public Gene mutate() {
-        value = Rand.getRandInteger((Integer) lowerBound, (Integer) upperBound);
+        value = Rand.getRandInteger(lowerBound, upperBound);
         return this;
     }
 
     @Override
     public Gene getInstance() {
-        return new IntegerValueGene((Integer) lowerBound, (Integer) upperBound);
+        return new IntegerValueGene(lowerBound, upperBound);
     }
 
     @Override
     public Gene clone() {
-        return new IntegerValueGene((Integer) lowerBound, (Integer) upperBound, (Integer) value);
+        return new IntegerValueGene(lowerBound, upperBound, value);
     }
 }
