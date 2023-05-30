@@ -8,14 +8,13 @@ import helpers.Rand;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Progenitor {
     public static class Builder{
         private Chromosome chromosome;
         private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0;
-        private double mutationProbability=0.01;
-        private EndCondition endCondition = EndCondition.FITNESS_REACHED;
+        private double mutationProbability=0.01, targetFitness = Double.MAX_VALUE;
+        private EndCondition endCondition = EndCondition.TARGET_FITNESS;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
         private SelectionMethod selectionMethod = SelectionMethod.RANK;
         private Function<Chromosome, Double> fitness;
@@ -31,6 +30,11 @@ public class Progenitor {
 
         public Builder endCondition(EndCondition endCondition){
             this.endCondition = endCondition;
+            return this;
+        }
+
+        public Builder targetFitness(double targetFitness){
+            this.targetFitness = targetFitness;
             return this;
         }
 
@@ -78,6 +82,7 @@ public class Progenitor {
             p.chromosome = chromosome;
             p.populationSize = populationSize;
             p.maxGenerations = maxGenerations;
+            p.targetFitness = targetFitness;
             p.endCondition = endCondition;
             p.crossoverMethod = crossoverMethod;
             p.mutationProbability = mutationProbability;
@@ -92,7 +97,7 @@ public class Progenitor {
     // User-defined parameters
     private Chromosome chromosome;
     private int populationSize, maxGenerations, tournamentK, elitismCount;
-    private double mutationProbability;
+    private double mutationProbability, targetFitness;
     private EndCondition endCondition;
     private CrossoverMethod crossoverMethod;
     private SelectionMethod selectionMethod;
@@ -151,11 +156,9 @@ public class Progenitor {
             System.out.println("Finished generation "+(generation-1));
             System.out.println("Best fitness: "+fitness.apply(best));
 
-            //TODO: Implement other end conditions
-            if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations)
+            if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
+            || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
                 exitCondition=true;
-
-            System.out.println("Best: "+best);
         }
     }
 

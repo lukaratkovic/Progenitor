@@ -1,5 +1,5 @@
 package enums;
 
 public enum EndCondition {
-    FITNESS_REACHED, MAX_GENERATIONS
+    TARGET_FITNESS, MAX_GENERATIONS
 }
