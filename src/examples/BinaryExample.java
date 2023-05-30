@@ -1,23 +1,26 @@
+package examples;
+
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
-import model.*;
+import model.BinaryGene;
+import model.Chromosome;
+import model.Progenitor;
 
-public class Main {
+public class BinaryExample {
     public static void main(String[] args) {
-        IntegerValueGene intgene = new IntegerValueGene(0, 10);
-        Chromosome c =
-                new Chromosome(10, intgene);
+        BinaryGene templateGene = new BinaryGene();
+        Chromosome c = new Chromosome(100, templateGene);
 
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.TARGET_FITNESS)
-                .targetFitness(90)
+                .targetFitness(c.getLength())
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.TOURNAMENT)
+                .selectionMethod(SelectionMethod.RANK)
                 .elitismCount(2)
-                .fitness(Main::fitness)
+                .fitness(BinaryExample::fitness)
                 .build();
 
         progenitor.run();
@@ -25,7 +28,6 @@ public class Main {
 
     public static Double fitness(Chromosome c){
         return (double) c.getGenes().stream()
-                .mapToInt(g -> (Integer) g.getValue())
-                .sum();
+                .filter(g -> (Boolean) g.getValue()).count();
     }
 }
