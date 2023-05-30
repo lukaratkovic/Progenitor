@@ -192,7 +192,6 @@ public class Progenitor {
     //TODO: Fix roulette selection
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
-        System.out.println(populationFitness);
         double current = 0, rouletteResult = Rand.getRandDouble(0, populationFitness);
         for(Chromosome c: population){
             current += fitness.apply(c);
@@ -221,8 +220,14 @@ public class Progenitor {
 
     private Chromosome onePointCrossover(Chromosome p1, Chromosome p2){
         int crossoverPoint = Rand.getRandInteger(1, chromosome.getLength());
-        List<Gene> genes = new ArrayList<Gene>(p1.getGenes().subList(0, crossoverPoint));
-        genes.addAll(p2.getGenes().subList(crossoverPoint, chromosome.getLength()));
+        List<Gene> genes = new ArrayList(),
+                p1Genes = p1.getGenes(), p2Genes = p2.getGenes();
+        for (int i = 0; i < crossoverPoint; i++) {
+            genes.add(p1Genes.get(i).clone());
+        }
+        for (int i = crossoverPoint; i < chromosome.getLength(); i++) {
+            genes.add(p2Genes.get(i).clone());
+        }
         return new Chromosome(genes);
     }
 
@@ -232,9 +237,19 @@ public class Progenitor {
                 .limit(2)
                 .sorted()
                 .toArray();
-        List<Gene> genes = new ArrayList<>(p1.getGenes().subList(0, crossoverPoints[0]));
-        genes.addAll(p2.getGenes().subList(crossoverPoints[0], crossoverPoints[1]));
-        genes.addAll(p1.getGenes().subList(crossoverPoints[1], chromosome.getLength()));
+
+        List<Gene> genes = new ArrayList(),
+                p1Genes = p1.getGenes(), p2Genes = p2.getGenes();
+        for (int i = 0; i < crossoverPoints[0]; i++) {
+            genes.add(p1Genes.get(i).clone());
+        }
+        for (int i = crossoverPoints[0]; i < crossoverPoints[1]; i++) {
+            genes.add(p2Genes.get(i).clone());
+        }
+        for (int i = crossoverPoints[1]; i < chromosome.getLength(); i++) {
+            genes.add(p1Genes.get(i).clone());
+        }
+
         return new Chromosome(genes);
     }
 

@@ -4,21 +4,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Chromosome<T extends Gene> {
-    private List<T> genes;
-    private T geneInstance;
+public class Chromosome {
+    private List<Gene> genes;
+    private Gene geneInstance;
     private final int length;
 
 
-    public Chromosome(List<T> genes){
+    public Chromosome(List<Gene> genes){
         this.genes = genes;
         this.length = this.genes.size();
     }
 
-    public Chromosome(int length, T geneInstance) {
+    public Chromosome(int length, Gene geneInstance) {
         this.length = length;
         this.geneInstance = geneInstance;
-        this.genes = (List<T>) IntStream.range(0, length)
+        this.genes = IntStream.range(0, length)
                 .mapToObj(i -> geneInstance.getInstance())
                 .collect(Collectors.toList());
     }
@@ -27,7 +27,7 @@ public class Chromosome<T extends Gene> {
         return new Chromosome(genes);
     }
 
-    public Chromosome<T> getRandom(){
+    public Chromosome getRandom(){
         return new Chromosome(length, geneInstance);
     }
 
@@ -35,7 +35,7 @@ public class Chromosome<T extends Gene> {
         return length;
     }
 
-    public List<T> getGenes() {
+    public List<Gene> getGenes() {
         return genes;
     }
 

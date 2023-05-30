@@ -8,14 +8,14 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) {
         IntegerValueGene intgene = new IntegerValueGene(0, 10);
-        Chromosome<IntegerValueGene> c =
-                new Chromosome<>(10, intgene);
+        Chromosome c =
+                new Chromosome(10, intgene);
 
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(1000)
-                .crossoverMethod(CrossoverMethod.UNIFORM)
+                .maxGenerations(50)
+                .crossoverMethod(CrossoverMethod.TWO_POINT)
                 .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.RANK)
                 .elitismCount(2)
@@ -25,7 +25,7 @@ public class Main {
         progenitor.run();
     }
 
-    public static Double fitness(Chromosome<IntegerValueGene> c){
+    public static Double fitness(Chromosome c){
         return (double) c.getGenes().stream()
                 .mapToInt(g -> (Integer) g.getValue())
                 .sum();
