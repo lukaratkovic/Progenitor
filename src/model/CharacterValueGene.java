@@ -8,6 +8,8 @@ public class CharacterValueGene extends ValueGene<Character> {
     List<Character> allowedValues;
 
     public CharacterValueGene(List<Character> allowedValues) {
+        int index = Rand.getRandInteger(0, allowedValues.size());
+        this.value = allowedValues.get(index);
         this.allowedValues = allowedValues;
     }
 
