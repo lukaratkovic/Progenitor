@@ -156,14 +156,10 @@ public class Progenitor {
             population = newPopulation;
             generation++;
 
-//            System.out.println("Finished generation "+(generation-1));
-//            System.out.println("Best fitness: "+fitness.apply(best));
-
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
             || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
                 exitCondition=true;
 
-//            System.out.println(best);
             // Progress output
             int currentProgress = switch(endCondition){
                 case TARGET_FITNESS -> (int)(fitness.apply(best)*50 / targetFitness);
