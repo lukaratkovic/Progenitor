@@ -14,10 +14,10 @@ public class Main {
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(50)
-                .crossoverMethod(CrossoverMethod.TWO_POINT)
+                .maxGenerations(200)
+                .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.RANK)
+                .selectionMethod(SelectionMethod.TOURNAMENT)
                 .elitismCount(2)
                 .fitness(Main::fitness)
                 .build();

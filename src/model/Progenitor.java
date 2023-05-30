@@ -125,7 +125,7 @@ public class Progenitor {
                 else return 0;
             });
             newPopulation.addAll(population.subList(0, elitismCount).stream()
-                    .map(c -> c.clone()).collect(Collectors.toList()));
+                    .map(Chromosome::clone).toList());
 
             // Fill new population with new chromosomes
             while(newPopulation.size() < populationSize){
@@ -171,7 +171,6 @@ public class Progenitor {
         }
     }
 
-    //TODO: Fix rank selection
     private Chromosome rank(List<Chromosome> population) {
         population.sort((c1,c2) -> {
             if(fitness.apply(c1) < fitness.apply(c2)) return 1;
@@ -189,7 +188,6 @@ public class Progenitor {
                 "This is a library error and should not occur in implementation.");
     }
 
-    //TODO: Fix roulette selection
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
         double current = 0, rouletteResult = Rand.getRandDouble(0, populationFitness);
@@ -220,14 +218,13 @@ public class Progenitor {
 
     private Chromosome onePointCrossover(Chromosome p1, Chromosome p2){
         int crossoverPoint = Rand.getRandInteger(1, chromosome.getLength());
-        List<Gene> genes = new ArrayList(),
-                p1Genes = p1.getGenes(), p2Genes = p2.getGenes();
-        for (int i = 0; i < crossoverPoint; i++) {
-            genes.add(p1Genes.get(i).clone());
-        }
-        for (int i = crossoverPoint; i < chromosome.getLength(); i++) {
-            genes.add(p2Genes.get(i).clone());
-        }
+
+        List<Gene> genes = new ArrayList<>();
+        genes.addAll(p1.getGenes().subList(0, crossoverPoint).stream()
+                .map(Gene::clone).toList());
+        genes.addAll(p2.getGenes().subList(crossoverPoint, chromosome.getLength()).stream()
+                .map(Gene::clone).toList());
+
         return new Chromosome(genes);
     }
 
@@ -238,17 +235,13 @@ public class Progenitor {
                 .sorted()
                 .toArray();
 
-        List<Gene> genes = new ArrayList(),
-                p1Genes = p1.getGenes(), p2Genes = p2.getGenes();
-        for (int i = 0; i < crossoverPoints[0]; i++) {
-            genes.add(p1Genes.get(i).clone());
-        }
-        for (int i = crossoverPoints[0]; i < crossoverPoints[1]; i++) {
-            genes.add(p2Genes.get(i).clone());
-        }
-        for (int i = crossoverPoints[1]; i < chromosome.getLength(); i++) {
-            genes.add(p1Genes.get(i).clone());
-        }
+        List<Gene> genes = new ArrayList<>();
+        genes.addAll(p1.getGenes().subList(0, crossoverPoints[0]).stream()
+                .map(Gene::clone).toList());
+        genes.addAll(p2.getGenes().subList(crossoverPoints[0], crossoverPoints[1]).stream()
+                .map(Gene::clone).toList());
+        genes.addAll(p1.getGenes().subList(crossoverPoints[1], chromosome.getLength()).stream()
+                .map(Gene::clone).toList());
 
         return new Chromosome(genes);
     }
@@ -257,14 +250,14 @@ public class Progenitor {
         List<Gene> genes = new ArrayList<>();
         for (int i = 0; i < chromosome.getLength(); i++) {
             Chromosome targetParent = Rand.getRandBool() ? p1 : p2;
-            Gene gene = (Gene) targetParent.getGenes().get(i);
+            Gene gene = targetParent.getGenes().get(i);
             genes.add(gene.clone());
         }
         return new Chromosome(genes);
     }
 
     private void mutate(Chromosome chromosome){
-        for (Gene gene : (List<Gene>) chromosome.getGenes()) {
+        for (Gene gene : chromosome.getGenes()) {
             if(Rand.getRandInteger(0, 100) < mutationProbability*100){
                 gene.mutate();
             }
