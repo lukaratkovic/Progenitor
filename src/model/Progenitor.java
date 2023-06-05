@@ -7,6 +7,7 @@ import exceptions.RunNotCompletedException;
 import helpers.Rand;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -222,7 +223,7 @@ public class Progenitor {
                 .limit(tournamentK)
                 .forEach(i -> candidates.add(population.get(i)));
         return candidates.stream()
-                .max((c1, c2) -> fitness.apply(c1).compareTo(fitness.apply(c2)))
+                .max(Comparator.comparing(c -> fitness.apply(c)))
                 .get();
     }
 

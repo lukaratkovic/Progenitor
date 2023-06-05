@@ -1,5 +1,15 @@
 package enums;
 
+/**
+ * End condition determines when the execution of the generic algorithm stops.
+ */
 public enum EndCondition {
-    TARGET_FITNESS, MAX_GENERATIONS
+    /**
+     * Generic algorithm execution stops when a defined target fitness is reached or surpassed.
+     */
+    TARGET_FITNESS,
+    /**
+     * Generic algorithm execution stops when a defined number of generations is reached.
+     */
+    MAX_GENERATIONS
 }

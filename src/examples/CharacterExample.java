@@ -10,14 +10,21 @@ import model.Progenitor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Example of the Progenitor genetic algorithm using CharacterValueGene whose goal it is to create a predefined string.
+ */
 public class CharacterExample {
     public static void main(String[] args) {
+        // Allowed characters
         String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !";
         List<Character> charList = characters.chars().mapToObj(ch->(char)ch).toList();
 
+        // Declaring template gene
         CharacterValueGene templateGene = new CharacterValueGene(charList);
+        // Declaring template chromosome, with a defined length and template gene
         Chromosome c = new Chromosome(52, templateGene);
 
+        // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
                 .endCondition(EndCondition.TARGET_FITNESS)
@@ -29,7 +36,10 @@ public class CharacterExample {
                 .fitness(CharacterExample::fitness)
                 .build();
 
+        // Running the genetic algorithm
         progenitor.run();
+
+        // Fetching and outputting the best chromosome of the final generation
         Chromosome best = progenitor.getBest();
         String result = best.getGenes().stream()
                 .map(g -> g.getValue().toString())
@@ -37,6 +47,11 @@ public class CharacterExample {
         System.out.println(result);
     }
 
+    /**
+     * Custom fitness function
+     * @param c Chromosome whose fitness is being calculated
+     * @return The fitness of the Chromosome, in this case number of letters that match the target string
+     */
     public static Double fitness(Chromosome c){
         double fitness = 0;
         String target = "Progenitor is a Java library for genetic algorithms!";
