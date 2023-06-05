@@ -19,7 +19,7 @@ public class BinaryExample {
 
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
-                .populationSize(100)
+                .populationSize(10)
                 .endCondition(EndCondition.TARGET_FITNESS)
                 .targetFitness(c.getLength())
                 .crossoverMethod(CrossoverMethod.UNIFORM)

@@ -8,24 +8,23 @@ import model.IntegerValueGene;
 import model.Progenitor;
 
 /**
- * Example of the Progenitor genetic algorithm using IntegerValueGene whose goal it is to create a Chromosome of 10 numbers between 1 and 10 with the highest total value
+ * Example of the Progenitor genetic algorithm using IntegerValueGene whose goal it is to create a Chromosome of 100 numbers between 1 and 100 with the highest total value
  */
 public class IntegerExample {
     public static void main(String[] args) {
         // Declaring template gene
-        IntegerValueGene templateGene = new IntegerValueGene(1, 11);
+        IntegerValueGene templateGene = new IntegerValueGene(1, 101);
         // Declaring template chromosome, with a defined length and template gene
-        Chromosome c = new Chromosome(10, templateGene);
+        Chromosome c = new Chromosome(100, templateGene);
 
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
-                .populationSize(100)
-                .endCondition(EndCondition.TARGET_FITNESS)
-                .targetFitness(100)
-                .crossoverMethod(CrossoverMethod.UNIFORM)
-                .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.RANK)
-                .elitismCount(2)
+                .populationSize(20)
+                .endCondition(EndCondition.MAX_GENERATIONS)
+                .maxGenerations(1000)
+                .crossoverMethod(CrossoverMethod.TWO_POINT)
+                .mutationProbability(0.02)
+                .selectionMethod(SelectionMethod.ROULETTE)
                 .fitness(IntegerExample::fitness)
                 .build();
 
