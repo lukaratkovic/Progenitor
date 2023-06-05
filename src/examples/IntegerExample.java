@@ -21,9 +21,9 @@ public class IntegerExample {
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(20)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(1000)
+                .maxGenerations(10000)
                 .crossoverMethod(CrossoverMethod.TWO_POINT)
-                .mutationProbability(0.02)
+                .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.ROULETTE)
                 .fitness(IntegerExample::fitness)
                 .build();
