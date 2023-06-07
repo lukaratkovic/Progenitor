@@ -2,16 +2,19 @@ package model;
 
 import helpers.Rand;
 
+/**
+ * Implementation of a Gene with a binary value
+ */
 public class BinaryGene extends Gene<Boolean> {
     /***
-     * Initializes a new binary gene with random value
+     * Constructor with random value
      */
     public BinaryGene() {
         this.value = Rand.getRandBool();
     }
 
     /***
-     * Initializes a new binary gene with passed value
+     * Constructor with given value
      * @param value true or false
      */
     public BinaryGene(Boolean value){
@@ -40,11 +43,19 @@ public class BinaryGene extends Gene<Boolean> {
         return this;
     }
 
+    /**
+     * Creates a new instance of a binary gene
+     * @return new instance of BinaryGene
+     */
     @Override
     public Gene getInstance() {
         return new BinaryGene();
     }
 
+    /**
+     * Creates a new instance of a binary gene with equal value
+     * @return new instance of a BinaryGene
+     */
     @Override
     public Gene clone() {
         return new BinaryGene(value);
