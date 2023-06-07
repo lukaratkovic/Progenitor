@@ -11,55 +11,107 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Implementation of the Genetic algorithm, containing a Builder Pattern with default values, implementations of selection methods, crossovers, and mutation
+ */
 public class Progenitor {
+    /**
+     * Builder pattern for the genetic algorithm containing default values
+     */
     public static class Builder{
         private Chromosome chromosome;
         private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0;
         private double mutationProbability=0.01, targetFitness = Double.MAX_VALUE;
-        private EndCondition endCondition = EndCondition.TARGET_FITNESS;
+        private EndCondition endCondition = EndCondition.MAX_GENERATIONS;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
         private SelectionMethod selectionMethod = SelectionMethod.RANK;
         private Function<Chromosome, Double> fitness;
 
+        /**
+         * Initializes the builder and defines its template chromosome
+         * @param chromosome Template chromosome used for filling the initial population. It also defines the length of all new chromosomes created by the algorithm.
+         */
         public Builder(Chromosome chromosome){
             this.chromosome = chromosome;
         }
 
+        /**
+         * Sets the number of chromosomes in each generation
+         * @param populationSize integer number of chromosomes, default 10
+         * @return the builder instance
+         */
         public Builder populationSize(int populationSize) {
             this.populationSize = populationSize;
             return this;
         }
 
+        /**
+         * Sets the end condition for the genetic algorithm
+         * @param endCondition end condition, default EndCondition.MAX_GENERATIONS
+         * @return the builder instance
+         */
         public Builder endCondition(EndCondition endCondition){
             this.endCondition = endCondition;
             return this;
         }
 
+        /**
+         * Sets the target fitness for the TARGET_FITNESS end condition
+         * @param targetFitness generation at which the algorithm stops, default Double.MAX_VALUE
+         * @return the builder instance
+         */
         public Builder targetFitness(double targetFitness){
             this.targetFitness = targetFitness;
             return this;
         }
 
+        /**
+         * Sets the max number of generations for the MAX_GENERATIONS end condition
+         * @param maxGenerations generation at which the algorithm stops, default 100
+         * @return the builder instance
+         */
         public Builder maxGenerations(int maxGenerations){
             this.maxGenerations = maxGenerations;
             return this;
         }
 
+        /**
+         * Sets the crossover method for creating new chromosomes
+         * @param crossoverMethod crossover method, default CrossoverMethod.ONE_POINT
+         * @return the builder instance
+         */
         public Builder crossoverMethod(CrossoverMethod crossoverMethod){
             this.crossoverMethod=crossoverMethod;
             return this;
         }
 
+        /**
+         * Sets the probability for a chromosome's genes to undergo mutation
+         * @param mutationProbability mutation probability as a percentage between 0 and 1, default 0.01
+         * @return the builder instance
+         */
         public Builder mutationProbability(double mutationProbability){
+            if(mutationProbability < 0 || mutationProbability > 1)
+                throw new IllegalArgumentException("Mutation probability must be between 0 and 1");
             this.mutationProbability = mutationProbability;
             return this;
         }
 
+        /**
+         * Sets the selection method for choosing parent Chromosomes
+         * @param selectionMethod selection method, default SelectionMethod.RANK
+         * @return the builder instance
+         */
         public Builder selectionMethod(SelectionMethod selectionMethod){
             this.selectionMethod = selectionMethod;
             return this;
         }
 
+        /**
+         * Sets the K for the tournament selection method
+         * @param k number of chromosomes entering a tournament between 1 and populationSize, default 1
+         * @return the builder instance
+         */
         public Builder tournamentK(int k){
             if(k>populationSize || k < 1)
                 throw new IllegalArgumentException("tournamentK must be in range [1, populationSize]");
@@ -67,6 +119,11 @@ public class Progenitor {
             return this;
         }
 
+        /**
+         * Sets the number of best chromosomes to be copied to new population without applying any genetic operators
+         * @param elitismCount number of elites between 0 and populationSize, default 0
+         * @return the builder instance
+         */
         public Builder elitismCount(int elitismCount){
             if(elitismCount < 0 || elitismCount > populationSize)
                 throw new IllegalArgumentException("Elitism count must be in range [0, populationSize]");
@@ -74,12 +131,23 @@ public class Progenitor {
             return this;
         }
 
+        /**
+         * Sets the fitness function for determining the best chromosome of a population
+         * @param fitness reference to a function taking a single Chromosome parameter and returning a double
+         * @return
+         */
         public Builder fitness(Function<Chromosome, Double> fitness){
             this.fitness = fitness;
             return this;
         }
 
+        /**
+         * Builds and returns the final Progenitor object based on the provided parameters
+         * @return the fully constructed Progenitor object
+         */
         public Progenitor build(){
+            if(this.fitness == null)
+                throw new IllegalStateException("Fitness function must not be null");
             Progenitor p = new Progenitor();
             p.chromosome = chromosome;
             p.populationSize = populationSize;
@@ -152,11 +220,13 @@ public class Progenitor {
                 newPopulation.add(child);
             }
 
-            Chromosome best = newPopulation.stream().max((c1, c2) -> fitness.apply(c1).compareTo(fitness.apply(c2))).get();
+            // Finding the best chromosome
+            Chromosome best = newPopulation.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
 
             population = newPopulation;
             generation++;
 
+            // Checking if the end condition is met
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
             || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
                 exitCondition=true;
@@ -183,12 +253,21 @@ public class Progenitor {
         System.out.println();
     }
 
+    /**
+     * Returns the best chromosome of the final generation from the last run of the genetic algorithm.
+     * @return Chromosome
+     */
     public Chromosome getBest(){
         if(bestChromosome == null)
             throw new RunNotCompletedException("Best chromosome is null. Ensure that you have run the Progenitor.run() method first.");
         return bestChromosome;
     }
 
+    /**
+     * Performs the rank selection from a given population by ranking them, then randomly selecting a chromosome with higher rank chromosomes having a higher likelihood of being chosen
+     * @param population Population to perform the rank selection on
+     * @return Selected Chromosome
+     */
     private Chromosome rank(List<Chromosome> population) {
         population.sort((c1,c2) -> fitness.apply(c2).compareTo(fitness.apply(c1)));
         double current = 0, randomValue = Rand.getRandDouble(0,1);
@@ -202,6 +281,11 @@ public class Progenitor {
                 "This is a library error and should not occur in implementation.");
     }
 
+    /**
+     * Performs the roulette selection from a given population by randomly selecting a chromosome with higher-fitness chromosomes having a higher likelihood of being chosen
+     * @param population Population to perform the roulette selection on
+     * @return Selected Chromosome
+     */
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
         double current = 0, rouletteResult = Rand.getRandDouble(0, populationFitness);
@@ -215,6 +299,11 @@ public class Progenitor {
                 "This is a library error and should not occur in implementation.");
     }
 
+    /**
+     * Performs the tournament selection by randomly selecting K chromosomes from the population, then choosing the highest-fitness one as the winner
+     * @param population Population to perform the tournament selection on
+     * @return Selected Chromosome
+     */
     private Chromosome tournament(List<Chromosome> population){
         List<Chromosome> candidates = new ArrayList<>();
         // Select K random distinct chromosomes
@@ -227,6 +316,12 @@ public class Progenitor {
                 .get();
     }
 
+    /**
+     * Creates a new Chromosome from two parents by picking a random point, then copying the first parent's genes up to that point, and the second parent's genes from that point onwards
+     * @param p1 First parent
+     * @param p2 Second parent
+     * @return New Chromosome created from the combination of both parents' genes
+     */
     private Chromosome onePointCrossover(Chromosome p1, Chromosome p2){
         int crossoverPoint = Rand.getRandInteger(1, chromosome.getLength());
 
@@ -239,6 +334,12 @@ public class Progenitor {
         return new Chromosome(genes);
     }
 
+    /**
+     * Creates a new chromosome by picking two random, different points, then copying the first parent's genes up to the first point and from the second point onwards, and filling the rest with the second parent's genes
+     * @param p1 First parent
+     * @param p2 Second parent
+     * @return New Chromosome created from the combination of both parents' genes
+     */
     private Chromosome twoPointCrossover(Chromosome p1, Chromosome p2){
         int[] crossoverPoints = Rand.rand.ints(1, chromosome.getLength())
                 .distinct()
@@ -257,6 +358,12 @@ public class Progenitor {
         return new Chromosome(genes);
     }
 
+    /**
+     * Creates a new chromosome by randomly picking genes from both parents
+     * @param p1 First parent
+     * @param p2 Second parent
+     * @return New Chromosome created from the combination of both parents' genes
+     */
     private Chromosome uniformCrossover(Chromosome p1, Chromosome p2){
         List<Gene> genes = new ArrayList<>();
         for (int i = 0; i < chromosome.getLength(); i++) {
@@ -267,6 +374,10 @@ public class Progenitor {
         return new Chromosome(genes);
     }
 
+    /**
+     * Mutates randomly selected genes of a chromosome according to the mutationProbability paremeter
+     * @param chromosome Chromosome to undergo mutation
+     */
     private void mutate(Chromosome chromosome){
         for (Gene gene : chromosome.getGenes()) {
             if(Rand.getRandInteger(0, 100) < mutationProbability*100){
