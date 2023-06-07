@@ -238,10 +238,10 @@ public class Progenitor {
             };
             StringBuilder progressBuilder = new StringBuilder();
             progressBuilder
-                    .append('║')
-                    .append("█".repeat(currentProgress))
+                    .append('\u2551')
+                    .append("\u2588".repeat(currentProgress))
                     .append(" ".repeat(50-currentProgress))
-                    .append("║")
+                    .append("\u2551")
                     .append(" Generation ")
                     .append(generation)
                     .append(", Fitness: ")

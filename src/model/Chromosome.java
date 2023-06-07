@@ -72,7 +72,7 @@ public class Chromosome {
 
     /**
      * Getter for the Genes of Chromosome
-     * @return List<Gene> containing the Chromosome's Genes
+     * @return List of Genes
      */
     public List<Gene> getGenes() {
         return genes;

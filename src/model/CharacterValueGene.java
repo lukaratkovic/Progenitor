@@ -16,7 +16,7 @@ public class CharacterValueGene extends ValueGene<Character> {
 
     /**
      * Constructor with random value
-     * @param allowedValues List<Character> of allowed values
+     * @param allowedValues List containing allowed Characters
      */
     public CharacterValueGene(List<Character> allowedValues) {
         int index = Rand.getRandInteger(0, allowedValues.size());
@@ -26,7 +26,7 @@ public class CharacterValueGene extends ValueGene<Character> {
 
     /**
      * Constructor with given value
-     * @param allowedValues List<Character> of allowed values
+     * @param allowedValues List containing allowed characters
      * @param value a
      */
     public CharacterValueGene(List<Character> allowedValues, Character value){
