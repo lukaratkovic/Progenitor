@@ -186,6 +186,7 @@ public class Progenitor {
 
         int generation = 0;
         boolean exitCondition = false;
+        double startFitness = fitness.apply(population.stream().max(Comparator.comparing(c -> fitness.apply(c))).get());
 
         // Run genetic algorithm
         while(!exitCondition){
@@ -232,8 +233,9 @@ public class Progenitor {
                 exitCondition=true;
 
             // Progress output
+            Double currentFitness = fitness.apply(best);
             int currentProgress = switch(endCondition){
-                case TARGET_FITNESS -> (int)(fitness.apply(best)*50 / targetFitness);
+                case TARGET_FITNESS -> (int) ((startFitness-currentFitness)/(startFitness-targetFitness)*50); // Negative fitness
                 case MAX_GENERATIONS -> generation*50 / maxGenerations;
             };
             StringBuilder progressBuilder = new StringBuilder();
