@@ -288,9 +288,9 @@ public class Progenitor {
      */
     private Chromosome roulette(List<Chromosome> population) {
         double populationFitness = population.stream().mapToDouble(c -> fitness.apply(c)).sum();
-        double current = 0, rouletteResult = Rand.getRandDouble(0, populationFitness);
+        double current = 0, rouletteResult = Rand.getRandDouble(0, Math.abs(populationFitness));
         for(Chromosome c: population){
-            current += fitness.apply(c);
+            current += Math.abs(fitness.apply(c));
             if(rouletteResult < current){
                 return c;
             }
