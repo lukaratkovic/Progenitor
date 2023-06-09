@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Implementation of a Gene with Character values
  */
-public class CharacterValueGene extends ValueGene<Character> {
+public class CharacterValueGene extends Gene<Character> {
     /**
      * List of allowed values
      */

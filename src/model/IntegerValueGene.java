@@ -1,18 +1,30 @@
 package model;
 
+import exceptions.ValueOutOfBoundsException;
 import helpers.Rand;
 
 /**
  * Implementation of a Gene with Integer values within a user-defined range
  */
-public class IntegerValueGene extends NumericValueGene<Integer> {
+public class IntegerValueGene extends Gene<Integer> {
+    /***
+     * Inclusive lower bound
+     */
+    Integer lowerBound;
+    /***
+     * Exclusive upper bound
+     */
+    Integer upperBound;
+
     /**
      * Constructor with random value in range
      * @param lowerBound lowest allowed value, inclusive
      * @param upperBound highest allowed value, exclusive
      */
     public IntegerValueGene(Integer lowerBound, Integer upperBound) {
-        super(lowerBound, upperBound, Rand.getRandInteger(lowerBound, upperBound));
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.value = Rand.getRandInteger(lowerBound, upperBound);
     }
 
     /**
@@ -22,7 +34,11 @@ public class IntegerValueGene extends NumericValueGene<Integer> {
      * @param value value within given bounds
      */
     public IntegerValueGene(Integer lowerBound, Integer upperBound, Integer value){
-        super(lowerBound, upperBound, value);
+        if(value.compareTo(lowerBound) < 0 || value.compareTo(upperBound) >= 0)
+            throw new ValueOutOfBoundsException("Passed value is out of defined bounds");
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.value = value;
     }
 
     /**

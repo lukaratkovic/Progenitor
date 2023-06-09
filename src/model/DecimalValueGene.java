@@ -1,8 +1,17 @@
 package model;
 
+import exceptions.ValueOutOfBoundsException;
 import helpers.Rand;
 
-public class DecimalValueGene extends NumericValueGene<Double>{
+public class DecimalValueGene extends Gene<Double>{
+    /***
+     * Inclusive lower bound
+     */
+    Double lowerBound;
+    /***
+     * Exclusive upper bound
+     */
+    Double upperBound;
 
     /**
      * Constructor with random value in range
@@ -10,7 +19,9 @@ public class DecimalValueGene extends NumericValueGene<Double>{
      * @param upperBound highest allowed value, exclusive
      */
     public DecimalValueGene(Double lowerBound, Double upperBound){
-        super(lowerBound, upperBound, Rand.getRandDouble(lowerBound,upperBound));
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.value = Rand.getRandDouble(lowerBound, upperBound);
     }
 
     /**
@@ -20,7 +31,11 @@ public class DecimalValueGene extends NumericValueGene<Double>{
      * @param value value within given bounds
      */
     public DecimalValueGene(Double lowerBound, Double upperBound, Double value){
-        super(lowerBound, upperBound, value);
+        if(value.compareTo(lowerBound) < 0 || value.compareTo(upperBound) >= 0)
+            throw new ValueOutOfBoundsException("Passed value is out of defined bounds");
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.value = value;
     }
 
     /**
