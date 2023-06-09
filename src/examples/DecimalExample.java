@@ -34,7 +34,8 @@ public class DecimalExample {
 
         // Outputting the best chromosome of the final generation
         Chromosome best = progenitor.getBest();
-        System.out.println(best);
+        System.out.printf("f(x)=%.2fx^2%+.2fx%+.2f",best.getGenes().get(0).value,
+                best.getGenes().get(1).value, best.getGenes().get(2).value);
     }
 
     /**
