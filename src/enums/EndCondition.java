@@ -9,6 +9,10 @@ public enum EndCondition {
      */
     TARGET_FITNESS,
     /**
+     * Genetic algorithm execution stops when the fitness stagnates for a set number of generations
+     */
+    STAGNATE,
+    /**
      * Genetic algorithm execution stops when a defined number of generations is reached.
      */
     MAX_GENERATIONS

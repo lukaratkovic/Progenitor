@@ -19,7 +19,7 @@ public class Progenitor {
      */
     public static class Builder{
         private Chromosome chromosome;
-        private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0;
+        private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0, stagnateGenerations = 100;
         private double mutationProbability=0.01, targetFitness = Double.MAX_VALUE;
         private EndCondition endCondition = EndCondition.MAX_GENERATIONS;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
@@ -71,6 +71,13 @@ public class Progenitor {
          */
         public Builder maxGenerations(int maxGenerations){
             this.maxGenerations = maxGenerations;
+            return this;
+        }
+
+        public Builder stagnateGenerations(int stagnateGenerations){
+            if(this.stagnateGenerations <= 0)
+                throw new IllegalArgumentException("Number of generations for the STAGNATE end condition must be greater than 0");
+            this.stagnateGenerations = stagnateGenerations;
             return this;
         }
 
@@ -152,6 +159,7 @@ public class Progenitor {
             p.populationSize = populationSize;
             p.maxGenerations = maxGenerations;
             p.targetFitness = targetFitness;
+            p.stagnateGenerations = stagnateGenerations;
             p.endCondition = endCondition;
             p.crossoverMethod = crossoverMethod;
             p.mutationProbability = mutationProbability;
@@ -165,7 +173,7 @@ public class Progenitor {
 
     // User-defined parameters
     private Chromosome chromosome;
-    private int populationSize, maxGenerations, tournamentK, elitismCount;
+    private int populationSize, maxGenerations, tournamentK, elitismCount, stagnateGenerations;
     private double mutationProbability, targetFitness;
     private EndCondition endCondition;
     private CrossoverMethod crossoverMethod;
@@ -177,6 +185,7 @@ public class Progenitor {
 
     public void run(){
         Chromosome bestChromosome = null;
+        List<Chromosome> bestIndividuals = new ArrayList<>();
 
         // Start measuring execution time
         long startTime = System.nanoTime();
@@ -189,7 +198,9 @@ public class Progenitor {
 
         int generation = 0;
         boolean exitCondition = false;
-        double startFitness = fitness.apply(population.stream().max(Comparator.comparing(c -> fitness.apply(c))).get());
+        Chromosome bestInitialChromosome = population.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
+        bestIndividuals.add(bestInitialChromosome);
+        double startFitness = fitness.apply(bestInitialChromosome);
 
         // Run genetic algorithm
         while(!exitCondition){
@@ -226,6 +237,7 @@ public class Progenitor {
 
             // Finding the best chromosome
             Chromosome best = newPopulation.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
+            bestIndividuals.add(best);
 
             population = newPopulation;
             generation++;
@@ -234,11 +246,21 @@ public class Progenitor {
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
             || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
                 exitCondition=true;
+            if(endCondition == EndCondition.STAGNATE && generation >= stagnateGenerations){
+                double currentFitness = fitness.apply(best);
+                boolean hasDifferences = false;
+                for(int i=generation-1; i>generation-stagnateGenerations; i--){
+                    if(currentFitness != fitness.apply(bestIndividuals.get(i)))
+                        hasDifferences = true;
+                }
+                if(!hasDifferences) exitCondition=true;
+            }
 
             // Progress output
             Double currentFitness = fitness.apply(best);
             int currentProgress = switch(endCondition){
                 case TARGET_FITNESS -> (int) ((startFitness-currentFitness)/(startFitness-targetFitness)*50); // Negative fitness
+                case STAGNATE -> 0; // TODO: See if there is a better way to display the progress for STAGNATE end condition
                 case MAX_GENERATIONS -> generation*50 / maxGenerations;
             };
             StringBuilder progressBuilder = new StringBuilder();
