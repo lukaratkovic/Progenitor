@@ -20,12 +20,12 @@ public class IntegerExample {
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(20)
-                .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(10000)
+                .fitness(IntegerExample::fitness)
+                .selectionMethod(SelectionMethod.ROULETTE)
                 .crossoverMethod(CrossoverMethod.TWO_POINT)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.ROULETTE)
-                .fitness(IntegerExample::fitness)
+                .endCondition(EndCondition.MAX_GENERATIONS)
+                .maxGenerations(10000)
                 .build();
 
         // Running the genetic algorithm

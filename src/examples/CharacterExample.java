@@ -27,13 +27,13 @@ public class CharacterExample {
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(100)
-                .endCondition(EndCondition.TARGET_FITNESS)
-                .targetFitness(52)
+                .fitness(CharacterExample::fitness)
+                .elitismCount(2)
+                .selectionMethod(SelectionMethod.RANK)
                 .crossoverMethod(CrossoverMethod.ONE_POINT)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.RANK)
-                .elitismCount(2)
-                .fitness(CharacterExample::fitness)
+                .endCondition(EndCondition.TARGET_FITNESS)
+                .targetFitness(52)
                 .build();
 
         // Running the genetic algorithm

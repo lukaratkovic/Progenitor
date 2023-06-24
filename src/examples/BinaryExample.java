@@ -21,14 +21,14 @@ public class BinaryExample {
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(10)
-                .endCondition(EndCondition.TARGET_FITNESS)
-                .targetFitness(c.getLength())
-                .crossoverMethod(CrossoverMethod.UNIFORM)
-                .mutationProbability(0.01)
+                .fitness(BinaryExample::fitness)
+                .elitismCount(2)
                 .selectionMethod(SelectionMethod.TOURNAMENT)
                 .tournamentK(5)
-                .elitismCount(2)
-                .fitness(BinaryExample::fitness)
+                .crossoverMethod(CrossoverMethod.UNIFORM)
+                .mutationProbability(0.01)
+                .endCondition(EndCondition.TARGET_FITNESS)
+                .targetFitness(c.getLength())
                 .build();
 
         // Running the genetic algorithm

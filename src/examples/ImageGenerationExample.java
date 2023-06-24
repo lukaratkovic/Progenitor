@@ -36,14 +36,14 @@ public class ImageGenerationExample {
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(10)
-                .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(100000)
-                .crossoverMethod(CrossoverMethod.ONE_POINT)
-                .mutationProbability(0.01)
+                .fitness(ImageGenerationExample::fitness)
+                .elitismCount(2)
                 .selectionMethod(SelectionMethod.TOURNAMENT)
                 .tournamentK(3)
-                .elitismCount(2)
-                .fitness(ImageGenerationExample::fitness)
+                .crossoverMethod(CrossoverMethod.ONE_POINT)
+                .mutationProbability(0.01)
+                .endCondition(EndCondition.MAX_GENERATIONS)
+                .maxGenerations(100000)
                 .build();
 
         // Running the genetic algorithm

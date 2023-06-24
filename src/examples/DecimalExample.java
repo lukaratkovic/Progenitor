@@ -20,13 +20,13 @@ public class DecimalExample {
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(10)
-                .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(100000)
+                .fitness(DecimalExample::fitness)
+                .elitismCount(1)
+                .selectionMethod(SelectionMethod.RANK)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-                .selectionMethod(SelectionMethod.RANK)
-                .elitismCount(1)
-                .fitness(DecimalExample::fitness)
+                .endCondition(EndCondition.MAX_GENERATIONS)
+                .maxGenerations(100000)
                 .build();
 
         //Running the genetic algorithm
