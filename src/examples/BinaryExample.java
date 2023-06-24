@@ -6,6 +6,7 @@ import enums.SelectionMethod;
 import model.BinaryGene;
 import model.Chromosome;
 import model.Progenitor;
+import model.RunResult;
 
 /**
  * Example of the Progenitor genetic algorithm using BinaryGene whose goal it is to create a Chromosome of 100 binary genes with all values being "1".
@@ -32,6 +33,8 @@ public class BinaryExample {
 
         // Running the genetic algorithm
         progenitor.run();
+        // Print run results
+        System.out.println(progenitor.getRunResult());
     }
 
     /**

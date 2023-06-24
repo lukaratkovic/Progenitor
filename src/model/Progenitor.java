@@ -3,7 +3,6 @@ package model;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
-import exceptions.RunNotCompletedException;
 import helpers.Rand;
 
 import java.util.ArrayList;
@@ -172,12 +171,16 @@ public class Progenitor {
     private CrossoverMethod crossoverMethod;
     private SelectionMethod selectionMethod;
     private Function<Chromosome, Double> fitness;
-
-    private Chromosome bestChromosome;
+    private RunResult runResult;
 
     private Progenitor(){}
 
     public void run(){
+        Chromosome bestChromosome = null;
+
+        // Start measuring execution time
+        long startTime = System.nanoTime();
+
         // Create initial population with random values
         List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
@@ -253,16 +256,20 @@ public class Progenitor {
             bestChromosome = best;
         }
         System.out.println();
+
+        // Stop measuring execution time
+        long elapsedTime = System.nanoTime() - startTime;
+
+        // Create run results
+        runResult = new RunResult();
+        runResult.setExecutionTime(elapsedTime / 1000000);
+        runResult.setBestChromosome(bestChromosome);
+        runResult.setGenerationCount(generation);
+        runResult.setFinalFitness(fitness.apply(bestChromosome));
     }
 
-    /**
-     * Returns the best chromosome of the final generation from the last run of the genetic algorithm.
-     * @return Chromosome
-     */
-    public Chromosome getBest(){
-        if(bestChromosome == null)
-            throw new RunNotCompletedException("Best chromosome is null. Ensure that you have run the Progenitor.run() method first.");
-        return bestChromosome;
+    public RunResult getRunResult() {
+        return runResult;
     }
 
     /**

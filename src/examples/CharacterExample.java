@@ -40,7 +40,7 @@ public class CharacterExample {
         progenitor.run();
 
         // Fetching and outputting the best chromosome of the final generation
-        Chromosome best = progenitor.getBest();
+        Chromosome best = progenitor.getRunResult().getBestChromosome();
         String result = best.getGenes().stream()
                 .map(g -> g.getValue().toString())
                 .collect(Collectors.joining());

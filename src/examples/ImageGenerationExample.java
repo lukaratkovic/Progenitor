@@ -37,7 +37,7 @@ public class ImageGenerationExample {
         Progenitor progenitor = new Progenitor.Builder(c)
                 .populationSize(10)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(200000)
+                .maxGenerations(100000)
                 .crossoverMethod(CrossoverMethod.ONE_POINT)
                 .mutationProbability(0.01)
                 .selectionMethod(SelectionMethod.TOURNAMENT)
@@ -50,7 +50,7 @@ public class ImageGenerationExample {
         progenitor.run();
 
         // Fetching and saving the best generated image of the final generation
-        List<Integer> generatedImage = progenitor.getBest().getGenes().stream()
+        List<Integer> generatedImage = progenitor.getRunResult().getBestChromosome().getGenes().stream()
                 .map(g -> (Integer) g.getValue()).toList();
         saveImage(generatedImage);
     }
