@@ -39,6 +39,9 @@ public class CharacterExample {
         // Running the genetic algorithm
         progenitor.run();
 
+        // Print run results
+        progenitor.getRunResult().print();
+
         // Fetching and outputting the best chromosome of the final generation
         Chromosome best = progenitor.getRunResult().getBestChromosome();
         String result = best.getGenes().stream()

@@ -190,6 +190,7 @@ public class Progenitor {
 
         // Start measuring execution time
         long startTime = System.nanoTime();
+        long totalSelectionTime=0, totalCrossoverTime=0, totalMutationTime=0;
 
         // Create initial population with random values
         List<Chromosome> population = new ArrayList<>();
@@ -214,6 +215,7 @@ public class Progenitor {
 
             // Fill new population with new chromosomes
             while(newPopulation.size() < populationSize){
+                long selectionStartTime = System.nanoTime();
                 Chromosome parent1 = switch(selectionMethod){
                     case TOURNAMENT -> tournament(population);
                     case ROULETTE -> roulette(population);
@@ -227,12 +229,17 @@ public class Progenitor {
                         case RANK -> rank(population);
                     };
                 }
+                totalSelectionTime += System.nanoTime() - selectionStartTime;
+                long crossoverStartTime = System.nanoTime();
                 Chromosome child = switch(crossoverMethod){
                     case ONE_POINT -> onePointCrossover(parent1, parent2);
                     case TWO_POINT -> twoPointCrossover(parent1, parent2);
                     case UNIFORM -> uniformCrossover(parent1, parent2);
                 };
+                totalCrossoverTime += System.nanoTime()-crossoverStartTime;
+                long mutationStartTime = System.nanoTime();
                 mutate(child);
+                totalMutationTime += System.nanoTime() - mutationStartTime;
                 newPopulation.add(child);
             }
 
@@ -289,6 +296,9 @@ public class Progenitor {
         // Create run results
         runResult = new RunResult();
         runResult.setExecutionTime(elapsedTime / 1000000);
+        runResult.setSelectionTime(totalSelectionTime / 1000000);
+        runResult.setCrossoverTime(totalCrossoverTime / 1000000);
+        runResult.setMutationTime(totalMutationTime / 1000000);
         runResult.setBestChromosome(bestChromosome);
         runResult.setGenerationCount(generation);
         runResult.setFinalFitness(fitness.apply(bestChromosome));
