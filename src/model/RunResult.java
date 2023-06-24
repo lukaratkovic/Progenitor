@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class RunResult {
     private long executionTime;
     private Chromosome bestChromosome;
@@ -12,7 +14,7 @@ public class RunResult {
         return executionTime;
     }
 
-    public void setExecutionTime(long executionTime) {
+    void setExecutionTime(long executionTime) {
         this.executionTime = executionTime;
     }
 
@@ -20,7 +22,7 @@ public class RunResult {
         return bestChromosome;
     }
 
-    public void setBestChromosome(Chromosome bestChromosome) {
+    void setBestChromosome(Chromosome bestChromosome) {
         this.bestChromosome = bestChromosome;
     }
 
@@ -28,7 +30,7 @@ public class RunResult {
         return generationCount;
     }
 
-    public void setGenerationCount(int generationCount) {
+    void setGenerationCount(int generationCount) {
         this.generationCount = generationCount;
     }
 
@@ -36,7 +38,7 @@ public class RunResult {
         return finalFitness;
     }
 
-    public void setFinalFitness(double finalFitness) {
+    void setFinalFitness(double finalFitness) {
         this.finalFitness = finalFitness;
     }
 
