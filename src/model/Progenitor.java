@@ -184,8 +184,9 @@ public class Progenitor {
     private Progenitor(){}
 
     public void run(){
-        Chromosome bestChromosome = null;
         List<Chromosome> bestIndividuals = new ArrayList<>();
+        Chromosome bestChromosome = null;
+        int sameGenerations = 0;
 
         // Start measuring execution time
         long startTime = System.nanoTime();
@@ -249,18 +250,21 @@ public class Progenitor {
             if(endCondition == EndCondition.STAGNATE && generation >= stagnateGenerations){
                 double currentFitness = fitness.apply(best);
                 boolean hasDifferences = false;
+                int counter = 1;
                 for(int i=generation-1; i>generation-stagnateGenerations; i--){
                     if(currentFitness != fitness.apply(bestIndividuals.get(i)))
                         hasDifferences = true;
+                    else counter++;
                 }
                 if(!hasDifferences) exitCondition=true;
+                if(sameGenerations < counter) sameGenerations = counter;
             }
 
             // Progress output
             Double currentFitness = fitness.apply(best);
             int currentProgress = switch(endCondition){
                 case TARGET_FITNESS -> (int) ((startFitness-currentFitness)/(startFitness-targetFitness)*50); // Negative fitness
-                case STAGNATE -> 0; // TODO: See if there is a better way to display the progress for STAGNATE end condition
+                case STAGNATE -> (int)((double)sameGenerations/stagnateGenerations*50);
                 case MAX_GENERATIONS -> generation*50 / maxGenerations;
             };
             StringBuilder progressBuilder = new StringBuilder();
