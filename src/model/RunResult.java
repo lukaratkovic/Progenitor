@@ -7,6 +7,7 @@ public class RunResult {
     private Chromosome bestChromosome;
     private int generationCount;
     private double finalFitness;
+    private List<Chromosome> bestIndividuals;
 
     RunResult() {}
 
@@ -42,12 +43,19 @@ public class RunResult {
         this.finalFitness = finalFitness;
     }
 
-    @Override
-    public String toString() {
+    public List<Chromosome> getBestIndividuals() {
+        return bestIndividuals;
+    }
+
+    void setBestIndividuals(List<Chromosome> bestIndividuals) {
+        this.bestIndividuals = bestIndividuals;
+    }
+
+    public void print() {
         StringBuilder sb = new StringBuilder("RUN RESULTS\n")
                 .append("Total generations: ").append(generationCount).append("\n")
                 .append("Total execution time: ").append(executionTime).append("ms\n")
                 .append("Final fitness: ").append(finalFitness).append("\n");
-        return sb.toString();
+        System.out.println(sb);
     }
 }

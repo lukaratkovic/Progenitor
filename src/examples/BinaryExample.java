@@ -34,7 +34,7 @@ public class BinaryExample {
         // Running the genetic algorithm
         progenitor.run();
         // Print run results
-        System.out.println(progenitor.getRunResult());
+        progenitor.getRunResult().print();
     }
 
     /**

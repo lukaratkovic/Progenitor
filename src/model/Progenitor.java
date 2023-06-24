@@ -19,7 +19,7 @@ public class Progenitor {
      */
     public static class Builder{
         private Chromosome chromosome;
-        private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0, stagnateGenerations = 100;
+        private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0, stagnateGenerations=100;
         private double mutationProbability=0.01, targetFitness = Double.MAX_VALUE;
         private EndCondition endCondition = EndCondition.MAX_GENERATIONS;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
@@ -292,6 +292,7 @@ public class Progenitor {
         runResult.setBestChromosome(bestChromosome);
         runResult.setGenerationCount(generation);
         runResult.setFinalFitness(fitness.apply(bestChromosome));
+        runResult.setBestIndividuals(bestIndividuals);
     }
 
     public RunResult getRunResult() {
