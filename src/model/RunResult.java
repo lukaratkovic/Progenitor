@@ -58,4 +58,8 @@ public class RunResult {
                 .append("Final fitness: ").append(finalFitness).append("\n");
         System.out.println(sb);
     }
+
+    public Chromosome getBestForGeneration(int generation){
+        return bestIndividuals.get(generation);
+    }
 }
