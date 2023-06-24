@@ -3,10 +3,7 @@ package examples;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
-import model.Chromosome;
-import model.Gene;
-import model.IntegerValueGene;
-import model.Progenitor;
+import model.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -21,7 +19,7 @@ import java.util.stream.IntStream;
  */
 public class ImageGenerationExample {
     private static final String IN_IMAGE_PATH = "example_files/tvz.png";
-    private static final String OUT_IMAGE_PATH = "example_files/tvz_generated.png";
+    private static final String OUT_IMAGE_PATH = "example_files/tvz_final.png";
     private static List<Integer> targetImage;
     private static int imageX, imageY;
     public static void main(String[] args) {
@@ -29,7 +27,8 @@ public class ImageGenerationExample {
         loadImage();
 
         // Declaring template gene
-        IntegerValueGene templateGene = new IntegerValueGene(0, 256);
+        IntegerValueGene templateGene =
+                new IntegerValueGene(0, 256);
         // Declaring template chromosome, with a defined length equal to the number of image pixels and template gene
         Chromosome c = new Chromosome(imageX*imageY, templateGene);
 
@@ -43,16 +42,26 @@ public class ImageGenerationExample {
                 .crossoverMethod(CrossoverMethod.ONE_POINT)
                 .mutationProbability(0.01)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(100000)
+                .maxGenerations(10000)
                 .build();
 
         // Running the genetic algorithm
         progenitor.run();
 
+        RunResult result = progenitor.getRunResult();
+
         // Fetching and saving the best generated image of the final generation
-        List<Integer> generatedImage = progenitor.getRunResult().getBestChromosome().getGenes().stream()
+        List<Integer> generatedImage = result.getBestChromosome().getGenes().stream()
                 .map(g -> (Integer) g.getValue()).toList();
-        saveImage(generatedImage);
+
+        for(int i=0; i<10000; i+=1000){
+            List<Integer> image = result.getBestForGeneration(i).getGenes()
+                    .stream().map(k -> (Integer) k.getValue())
+                    .toList();
+            saveImage(image, "example_files/tvz_"+i+".png");
+        }
+
+        saveImage(generatedImage, OUT_IMAGE_PATH);
     }
 
     /**
@@ -61,8 +70,13 @@ public class ImageGenerationExample {
      * @return The fitness of the chromosome, in this case the sum of differences of pixel values of the generated image compared to the target
      */
     public static Double fitness(Chromosome c){
-        return (double) IntStream.range(0, c.getGenes().size())
-                .map(i -> 255 - Math.abs((Integer)c.getGenes().get(i).getValue()-targetImage.get(i)))
+        return IntStream.range(0, c.getGenes().size())
+                .mapToDouble(i -> {
+                    int difference = (Integer) c.getGenes().get(i).getValue() - targetImage.get(i);
+                    int diffSquare = (int) Math.pow(difference, 2);
+                    double squished = diffSquare / Math.pow(255,2);
+                    return 1 - squished;
+                })
                 .sum();
     }
 
@@ -94,7 +108,7 @@ public class ImageGenerationExample {
      * Saves the passed image to the OUT_IMAGE_PATH path
      * @param image List of integers (0-255) representing the brightness of each pixel
      */
-    public static void saveImage(List<Integer> image){
+    public static void saveImage(List<Integer> image, String path){
         BufferedImage output = new BufferedImage(imageX, imageY, BufferedImage.TYPE_BYTE_GRAY);
 
         int index = 0;
@@ -107,7 +121,7 @@ public class ImageGenerationExample {
             }
         }
 
-        File file = new File(OUT_IMAGE_PATH);
+        File file = new File(path);
         try{
             ImageIO.write(output, "png", file);
         } catch(IOException e){
