@@ -3,6 +3,7 @@ package model;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
+import exceptions.RunNotCompletedException;
 import helpers.Rand;
 
 import java.util.ArrayList;
@@ -245,7 +246,7 @@ public class Progenitor {
 
             // Finding the best chromosome
             Chromosome best = newPopulation.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
-            bestIndividuals.add(best);
+            bestIndividuals.add(best.clone());
 
             population = newPopulation;
             generation++;
@@ -306,6 +307,8 @@ public class Progenitor {
     }
 
     public RunResult getRunResult() {
+        if(runResult == null)
+            throw new RunNotCompletedException("Run result could not be found. Make sure to run Progenitor.run() before calling this method");
         return runResult;
     }
 
