@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,42 +43,34 @@ public class ImageGenerationExample {
                 .crossoverMethod(CrossoverMethod.ONE_POINT)
                 .mutationProbability(0.01)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(10000)
+                .maxGenerations(100000)
                 .build();
 
         // Running the genetic algorithm
         progenitor.run();
 
         RunResult result = progenitor.getRunResult();
+        result.print();
 
-        // Fetching and saving the best generated image of the final generation
-        List<Integer> generatedImage = result.getBestChromosome().getGenes().stream()
-                .map(g -> (Integer) g.getValue()).toList();
-
-        for(int i=0; i<10000; i+=1000){
+        List<Integer> breakpoints = Arrays.asList(100, 500, 1000, 10000, 25000, 50000, 100000);
+        for(Integer i : breakpoints){
             List<Integer> image = result.getBestForGeneration(i).getGenes()
                     .stream().map(k -> (Integer) k.getValue())
                     .toList();
             saveImage(image, "example_files/tvz_"+i+".png");
         }
-
-        saveImage(generatedImage, OUT_IMAGE_PATH);
     }
 
     /**
      * Custom fitness function
      * @param c Chromosome whose fitness is being calculated
-     * @return The fitness of the chromosome, in this case the sum of differences of pixel values of the generated image compared to the target
+     * @return The fitness of the chromosome, in this case the reciprocal sum of differences of pixel values of the generated image compared to the target
      */
     public static Double fitness(Chromosome c){
-        return IntStream.range(0, c.getGenes().size())
-                .mapToDouble(i -> {
-                    int difference = (Integer) c.getGenes().get(i).getValue() - targetImage.get(i);
-                    int diffSquare = (int) Math.pow(difference, 2);
-                    double squished = diffSquare / Math.pow(255,2);
-                    return 1 - squished;
-                })
+        return 1.0/IntStream.range(0, c.getLength())
+                .mapToDouble(i -> ((Integer) c.getGenes().get(i).getValue() - targetImage.get(i))*((Integer) c.getGenes().get(i).getValue() - targetImage.get(i)))
                 .sum();
+
     }
 
     /**
