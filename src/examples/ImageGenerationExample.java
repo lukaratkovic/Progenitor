@@ -40,10 +40,12 @@ public class ImageGenerationExample {
                 .elitismCount(2)
                 .selectionMethod(SelectionMethod.TOURNAMENT)
                 .tournamentK(3)
-                .crossoverMethod(CrossoverMethod.ONE_POINT)
+                .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-                .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(100000)
+//                .endCondition(EndCondition.MAX_GENERATIONS)
+//                .maxGenerations(100000)
+                .endCondition(EndCondition.TIME_ELAPSED)
+                .maxTime(90)
                 .build();
 
         // Running the genetic algorithm
@@ -52,13 +54,16 @@ public class ImageGenerationExample {
         RunResult result = progenitor.getRunResult();
         result.print();
 
-        List<Integer> breakpoints = Arrays.asList(100, 500, 1000, 10000, 25000, 50000, 100000);
+        /*List<Integer> breakpoints = Arrays.asList(100, 500, 1000, 10000, 25000, 50000, 100000);
         for(Integer i : breakpoints){
             List<Integer> image = result.getBestForGeneration(i).getGenes()
                     .stream().map(k -> (Integer) k.getValue())
                     .toList();
             saveImage(image, "example_files/tvz_"+i+".png");
-        }
+        }*/
+
+        List<Integer> best = result.getBestChromosome().getGenes().stream().map(g->(Integer)g.getValue()).toList();
+        saveImage(best, OUT_IMAGE_PATH);
     }
 
     /**

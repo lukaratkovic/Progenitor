@@ -21,6 +21,7 @@ public class Progenitor {
     public static class Builder{
         private Chromosome chromosome;
         private int populationSize=10, maxGenerations=100, tournamentK=1, elitismCount=0, stagnateGenerations=100;
+        private long maxTime = 60;
         private double mutationProbability=0.01, targetFitness = Double.MAX_VALUE;
         private EndCondition endCondition = EndCondition.MAX_GENERATIONS;
         private CrossoverMethod crossoverMethod = CrossoverMethod.ONE_POINT;
@@ -79,6 +80,11 @@ public class Progenitor {
             if(this.stagnateGenerations <= 0)
                 throw new IllegalArgumentException("Number of generations for the STAGNATE end condition must be greater than 0");
             this.stagnateGenerations = stagnateGenerations;
+            return this;
+        }
+
+        public Builder maxTime(long maxTime){
+            this.maxTime = maxTime;
             return this;
         }
 
@@ -161,6 +167,7 @@ public class Progenitor {
             p.maxGenerations = maxGenerations;
             p.targetFitness = targetFitness;
             p.stagnateGenerations = stagnateGenerations;
+            p.maxTime = maxTime;
             p.endCondition = endCondition;
             p.crossoverMethod = crossoverMethod;
             p.mutationProbability = mutationProbability;
@@ -175,6 +182,7 @@ public class Progenitor {
     // User-defined parameters
     private Chromosome chromosome;
     private int populationSize, maxGenerations, tournamentK, elitismCount, stagnateGenerations;
+    private long maxTime;
     private double mutationProbability, targetFitness;
     private EndCondition endCondition;
     private CrossoverMethod crossoverMethod;
@@ -253,7 +261,8 @@ public class Progenitor {
 
             // Checking if the end condition is met
             if(endCondition == EndCondition.MAX_GENERATIONS && generation == maxGenerations
-            || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness)
+            || endCondition == EndCondition.TARGET_FITNESS && fitness.apply(best) >= targetFitness
+            || endCondition == EndCondition.TIME_ELAPSED && (System.nanoTime()-startTime)/1_000_000_000 >= maxTime)
                 exitCondition=true;
             if(endCondition == EndCondition.STAGNATE && generation >= stagnateGenerations){
                 double currentFitness = fitness.apply(best);
@@ -273,6 +282,7 @@ public class Progenitor {
             int currentProgress = switch(endCondition){
                 case TARGET_FITNESS -> (int) ((startFitness-currentFitness)/(startFitness-targetFitness)*50); // Negative fitness
                 case STAGNATE -> (int)((double)sameGenerations/stagnateGenerations*50);
+                case TIME_ELAPSED -> (int)((System.nanoTime()-startTime)/1_000_000_000/(double)maxTime*50);
                 case MAX_GENERATIONS -> generation*50 / maxGenerations;
             };
             StringBuilder progressBuilder = new StringBuilder();
@@ -296,10 +306,10 @@ public class Progenitor {
 
         // Create run results
         runResult = new RunResult();
-        runResult.setExecutionTime(elapsedTime / 1000000);
-        runResult.setSelectionTime(totalSelectionTime / 1000000);
-        runResult.setCrossoverTime(totalCrossoverTime / 1000000);
-        runResult.setMutationTime(totalMutationTime / 1000000);
+        runResult.setExecutionTime(elapsedTime / 1_000_000);
+        runResult.setSelectionTime(totalSelectionTime / 1_000_000);
+        runResult.setCrossoverTime(totalCrossoverTime / 1_000_000);
+        runResult.setMutationTime(totalMutationTime / 1_000_000);
         runResult.setBestChromosome(bestChromosome);
         runResult.setGenerationCount(generation);
         runResult.setFinalFitness(fitness.apply(bestChromosome));
