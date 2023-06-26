@@ -38,14 +38,16 @@ public class ImageGenerationExample {
                 .populationSize(10)
                 .fitness(ImageGenerationExample::fitness)
                 .elitismCount(2)
-                .selectionMethod(SelectionMethod.TOURNAMENT)
-                .tournamentK(3)
+                .selectionMethod(SelectionMethod.RANK)
+//                .tournamentK(10)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
 //                .endCondition(EndCondition.MAX_GENERATIONS)
 //                .maxGenerations(100000)
                 .endCondition(EndCondition.TIME_ELAPSED)
-                .maxTime(90)
+                .maxTime(30)
+//                .endCondition(EndCondition.STAGNATE)
+//                .stagnateGenerations(500)
                 .build();
 
         // Running the genetic algorithm
@@ -73,9 +75,8 @@ public class ImageGenerationExample {
      */
     public static Double fitness(Chromosome c){
         return 1.0/IntStream.range(0, c.getLength())
-                .mapToDouble(i -> ((Integer) c.getGenes().get(i).getValue() - targetImage.get(i))*((Integer) c.getGenes().get(i).getValue() - targetImage.get(i)))
+                .mapToDouble(i -> Math.abs((Integer) c.getGenes().get(i).getValue() - targetImage.get(i)))
                 .sum();
-
     }
 
     /**

@@ -269,8 +269,10 @@ public class Progenitor {
                 boolean hasDifferences = false;
                 int counter = 1;
                 for(int i=generation-1; i>generation-stagnateGenerations; i--){
-                    if(currentFitness != fitness.apply(bestIndividuals.get(i)))
+                    if(currentFitness != fitness.apply(bestIndividuals.get(i))) {
                         hasDifferences = true;
+                        break;
+                    }
                     else counter++;
                 }
                 if(!hasDifferences) exitCondition=true;
