@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
  * Example of the Progenitor genetic algorithm using IntegerValueGene whose goal it is to recreate a target grayscale image
  */
 public class ImageGenerationExample {
-    private static final String IN_IMAGE_PATH = "example_files/tvz.png";
-    private static final String OUT_IMAGE_PATH = "example_files/tvz_final.png";
+    private static final String IN_IMAGE_PATH = "example_files/passage64.png";
+    private static final String OUT_IMAGE_PATH = "example_files/passage64_final.png";
     private static List<Integer> targetImage;
     private static int imageX, imageY;
     public static void main(String[] args) {
@@ -35,19 +35,15 @@ public class ImageGenerationExample {
 
         // Using Builder Pattern to create a Progenitor object with custom parameters
         Progenitor progenitor = new Progenitor.Builder(c)
-                .populationSize(10)
+                .populationSize(30)
                 .fitness(ImageGenerationExample::fitness)
                 .elitismCount(2)
-                .selectionMethod(SelectionMethod.RANK)
-//                .tournamentK(10)
+                .selectionMethod(SelectionMethod.TOURNAMENT)
+                .tournamentK(15)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
-//                .endCondition(EndCondition.MAX_GENERATIONS)
-//                .maxGenerations(100000)
-                .endCondition(EndCondition.TIME_ELAPSED)
-                .maxTime(30)
-//                .endCondition(EndCondition.STAGNATE)
-//                .stagnateGenerations(500)
+                .endCondition(EndCondition.STAGNATE)
+                .stagnateGenerations(1000)
                 .build();
 
         // Running the genetic algorithm
@@ -56,13 +52,12 @@ public class ImageGenerationExample {
         RunResult result = progenitor.getRunResult();
         result.print();
 
-        /*List<Integer> breakpoints = Arrays.asList(100, 500, 1000, 10000, 25000, 50000, 100000);
-        for(Integer i : breakpoints){
+        for (int i=0; i<result.getGenerationCount(); i+=100){
             List<Integer> image = result.getBestForGeneration(i).getGenes()
                     .stream().map(k -> (Integer) k.getValue())
                     .toList();
-            saveImage(image, "example_files/tvz_"+i+".png");
-        }*/
+            saveImage(image, "example_files/passage/64/passage_"+i+".png");
+        }
 
         List<Integer> best = result.getBestChromosome().getGenes().stream().map(g->(Integer)g.getValue()).toList();
         saveImage(best, OUT_IMAGE_PATH);
