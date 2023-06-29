@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
  * Example of the Progenitor genetic algorithm using IntegerValueGene whose goal it is to recreate a target grayscale image
  */
 public class ImageGenerationExample {
-    private static final String IN_IMAGE_PATH = "example_files/passage64.png";
-    private static final String OUT_IMAGE_PATH = "example_files/passage64_final.png";
+    private static final String IN_IMAGE_PATH = "example_files/ImageGenerationExample/passage64.png";
+    private static final String OUT_IMAGE_PATH = "example_files/ImageGenerationExample/passage64_final.png";
     private static List<Integer> targetImage;
     private static int imageX, imageY;
     public static void main(String[] args) {
@@ -56,7 +56,7 @@ public class ImageGenerationExample {
             List<Integer> image = result.getBestForGeneration(i).getGenes()
                     .stream().map(k -> (Integer) k.getValue())
                     .toList();
-            saveImage(image, "example_files/passage/64/passage_"+i+".png");
+            saveImage(image, "example_files/ImageGenerationExample/passage/64/passage_"+i+".png");
         }
 
         List<Integer> best = result.getBestChromosome().getGenes().stream().map(g->(Integer)g.getValue()).toList();
