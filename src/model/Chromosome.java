@@ -59,7 +59,9 @@ public class Chromosome {
      * @return new instance of Chromosome
      */
     public Chromosome getRandom(){
-        return new Chromosome(length, geneInstance);
+        Chromosome newChromosome = this.clone();
+        newChromosome.getGenes().forEach(Gene::mutate);
+        return newChromosome;
     }
 
     /**

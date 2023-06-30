@@ -3,10 +3,7 @@ package examples.nnoptimization;
 import enums.CrossoverMethod;
 import enums.EndCondition;
 import enums.SelectionMethod;
-import model.Chromosome;
-import model.DecimalValueGene;
-import model.IntegerValueGene;
-import model.Progenitor;
+import model.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,37 +18,55 @@ public class NeuralNetworkOptimizationExample {
         IntegerValueGene batchSize = new IntegerValueGene(8, 1025);
         DecimalValueGene learnRate = new DecimalValueGene(0.0001, 0.1);
         DecimalValueGene momentum = new DecimalValueGene(0.0, 1.0);
-        HyperChromosome c = new HyperChromosome(Arrays.asList(batchSize, learnRate, momentum));
+        Chromosome c = new Chromosome(Arrays.asList(batchSize, learnRate, momentum));
 
-        fitness(c);
+        Progenitor progenitor = new Progenitor.Builder(c)
+                .populationSize(10)
+                .fitness(NeuralNetworkOptimizationExample::fitness)
+                .elitismCount(1)
+                .selectionMethod(SelectionMethod.TOURNAMENT)
+                .tournamentK(5)
+                .crossoverMethod(CrossoverMethod.UNIFORM)
+                .mutationProbability(0.01)
+                .endCondition(EndCondition.MAX_GENERATIONS)
+                .maxGenerations(10)
+                .build();
+
+        progenitor.run();
+
+        RunResult res = progenitor.getRunResult();
+        System.out.println(res);
+        Chromosome best = res.getBestChromosome();
+        System.out.println("Batch size: "+best.getGenes().get(0).getValue().toString());
+        System.out.println("learn_rate: "+best.getGenes().get(1).getValue().toString());
+        System.out.println("momentum: "+best.getGenes().get(2).getValue().toString());
     }
 
     public static Double fitness(Chromosome c){
-        HyperChromosome hc = (HyperChromosome) c;
         String[] pythonCommand = {VENV_PATH, NEURAL_NETWORK_PATH,
-                hc.getBatchSize().toString(),
-                hc.getLearnRate().toString(),
-                hc.getMomentum().toString()
+                c.getGenes().get(0).getValue().toString(),
+                c.getGenes().get(1).getValue().toString(),
+                c.getGenes().get(2).getValue().toString()
         };
         try{
             ProcessBuilder pb = new ProcessBuilder(pythonCommand);
             Process process = pb.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            String line;
+            String output = null, line;
 
             while((line = reader.readLine()) != null){
-                output.append(line).append("\n");
+                output = line;
             }
 
             int exitCode = process.waitFor();
 
             if(exitCode == 0){
-                System.out.println(output);
-            } else System.out.println(exitCode);
+                return Double.parseDouble(output);
+            }
+            return 0.0;
 
-            return 0.0; //TODO: Replace this with actual fitness
+            //TODO: Replace this with actual fitness
         } catch (IOException | InterruptedException e) {
             return 0.0;
         }

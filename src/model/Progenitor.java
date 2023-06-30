@@ -201,6 +201,8 @@ public class Progenitor {
         long startTime = System.nanoTime();
         long totalSelectionTime=0, totalCrossoverTime=0, totalMutationTime=0;
 
+        printProgress(0, 0, 0.0, startTime);
+
         // Create initial population with random values
         List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
@@ -288,20 +290,7 @@ public class Progenitor {
                 case TIME_ELAPSED -> (int)((System.nanoTime()-startTime)/1_000_000_000/(double)maxTime*50);
                 case MAX_GENERATIONS -> generation*50 / maxGenerations;
             };
-            StringBuilder progressBuilder = new StringBuilder();
-            progressBuilder
-                    .append('\u2551')
-                    .append("\u2588".repeat(currentProgress))
-                    .append(" ".repeat(50-currentProgress))
-                    .append("\u2551")
-                    .append(" Generation ")
-                    .append(generation)
-                    .append(", Fitness: ")
-                    .append(bestFitness)
-                    .append(", Time: ")
-                    .append((System.nanoTime()-startTime)/1_000_000_000)
-                    .append("s\r");
-            System.out.print(progressBuilder);
+            printProgress(currentProgress, generation, bestFitness, startTime);
             bestChromosome = best;
         }
         System.out.println();
@@ -457,5 +446,22 @@ public class Progenitor {
                 gene.mutate();
             }
         }
+    }
+
+    private void printProgress(int currentProgress, int generation, double bestFitness, long startTime){
+        StringBuilder progressBuilder = new StringBuilder();
+        progressBuilder
+                .append('\u2551')
+                .append("\u2588".repeat(currentProgress))
+                .append(" ".repeat(50-currentProgress))
+                .append("\u2551")
+                .append(" Generation ")
+                .append(generation)
+                .append(", Fitness: ")
+                .append(bestFitness)
+                .append(", Time: ")
+                .append((System.nanoTime()-startTime)/1_000_000_000)
+                .append("s\r");
+        System.out.print(progressBuilder);
     }
 }
