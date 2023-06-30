@@ -223,6 +223,8 @@ public class Progenitor {
         double startFitness = populationFitness.values().stream().max(Double::compare).get();
         bestFitnesses.add(startFitness);
 
+        printProgress(0, generation, startFitness, startTime);
+
         // Run genetic algorithm
         while(!exitCondition){
             List<Chromosome> newPopulation = new ArrayList<>();

@@ -24,8 +24,7 @@ public class NeuralNetworkOptimizationExample {
                 .populationSize(10)
                 .fitness(NeuralNetworkOptimizationExample::fitness)
                 .elitismCount(1)
-                .selectionMethod(SelectionMethod.TOURNAMENT)
-                .tournamentK(5)
+                .selectionMethod(SelectionMethod.ROULETTE)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
                 .endCondition(EndCondition.MAX_GENERATIONS)
@@ -65,8 +64,6 @@ public class NeuralNetworkOptimizationExample {
                 return Double.parseDouble(output);
             }
             return 0.0;
-
-            //TODO: Replace this with actual fitness
         } catch (IOException | InterruptedException e) {
             return 0.0;
         }
