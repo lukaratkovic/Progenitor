@@ -188,6 +188,7 @@ public class Progenitor {
     private SelectionMethod selectionMethod;
     private Function<Chromosome, Double> fitness;
     private RunResult runResult;
+    private Map<Chromosome, Double> populationFitness;
 
     private Progenitor(){}
 
@@ -209,11 +210,17 @@ public class Progenitor {
             population.add(chromosome.getRandom());
         }
 
+        populationFitness = population.stream()
+                .collect(Collectors.toMap(
+                        chromosome -> chromosome,
+                        chromosome -> fitness.apply(chromosome)
+                ));
+
         int generation = 0;
         boolean exitCondition = false;
-        Chromosome bestInitialChromosome = population.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
+        Chromosome bestInitialChromosome = population.stream().max(Comparator.comparing(c -> populationFitness.get(c))).get();
         bestIndividuals.add(bestInitialChromosome);
-        double startFitness = fitness.apply(bestInitialChromosome);
+        double startFitness = populationFitness.values().stream().max(Double::compare).get();
         bestFitnesses.add(startFitness);
 
         // Run genetic algorithm
@@ -221,7 +228,7 @@ public class Progenitor {
             List<Chromosome> newPopulation = new ArrayList<>();
 
             // Elitism
-            population.sort((c1, c2) -> fitness.apply(c2).compareTo(fitness.apply(c1)));
+            population.sort((c1, c2) -> populationFitness.get(c2).compareTo(populationFitness.get(c1)));
             newPopulation.addAll(population.subList(0, elitismCount).stream()
                     .map(Chromosome::clone).toList());
 
@@ -255,9 +262,16 @@ public class Progenitor {
                 newPopulation.add(child);
             }
 
+            // Calculate new population fitness
+            populationFitness = newPopulation.stream()
+                    .collect(Collectors.toMap(
+                            chromosome -> chromosome,
+                            chromosome -> fitness.apply(chromosome)
+                    ));
+
             // Finding the best chromosome
-            Chromosome best = newPopulation.stream().max(Comparator.comparing(c -> fitness.apply(c))).get();
-            Double bestFitness = fitness.apply(best);
+            Chromosome best = newPopulation.stream().max(Comparator.comparing(c -> populationFitness.get(c))).get();
+            Double bestFitness = populationFitness.get(best);
             bestIndividuals.add(best.clone());
             bestFitnesses.add(bestFitness);
 
@@ -306,7 +320,7 @@ public class Progenitor {
         runResult.setMutationTime(totalMutationTime / 1_000_000);
         runResult.setBestChromosome(bestChromosome);
         runResult.setGenerationCount(generation);
-        runResult.setFinalFitness(fitness.apply(bestChromosome));
+        runResult.setFinalFitness(populationFitness.get(bestChromosome));
         runResult.setBestIndividuals(bestIndividuals);
     }
 
@@ -322,12 +336,7 @@ public class Progenitor {
      * @return Selected Chromosome
      */
     private Chromosome rank(List<Chromosome> population) {
-        Map<Chromosome, Double> chromosomeFitnessMap = population.stream()
-                .collect(Collectors.toMap(
-                        chromosome -> chromosome,
-                        chromosome -> fitness.apply(chromosome)
-                ));
-        population.sort((c1, c2) -> chromosomeFitnessMap.get(c2).compareTo(chromosomeFitnessMap.get(c1)));
+        population.sort((c1, c2) -> populationFitness.get(c2).compareTo(populationFitness.get(c1)));
         double current = 0, randomValue = Rand.getRandDouble(0,1);
         for (int i=0; i<populationSize;i++){
             current += ((double)(populationSize-i)/(populationSize*(populationSize+1)/2));
@@ -345,15 +354,10 @@ public class Progenitor {
      * @return Selected Chromosome
      */
     private Chromosome roulette(List<Chromosome> population) {
-        Map<Chromosome, Double> chromosomeFitnessMap = population.stream()
-                .collect(Collectors.toMap(
-                        chromosome -> chromosome,
-                        chromosome -> fitness.apply(chromosome)
-                ));
-        double populationFitness = chromosomeFitnessMap.values().stream().mapToDouble(Double::doubleValue).sum();
-        double current = 0, rouletteResult = Rand.getRandDouble(0, Math.abs(populationFitness));
+        double populationFitnessSum = populationFitness.values().stream().mapToDouble(Double::doubleValue).sum();
+        double current = 0, rouletteResult = Rand.getRandDouble(0, Math.abs(populationFitnessSum));
         for(Chromosome c: population){
-            current += Math.abs(chromosomeFitnessMap.get(c));
+            current += Math.abs(populationFitness.get(c));
             if(rouletteResult < current){
                 return c;
             }
@@ -374,7 +378,7 @@ public class Progenitor {
                 .limit(tournamentK)
                 .parallel()
                 .mapToObj(population::get)
-                .max(Comparator.comparing(c -> fitness.apply(c)))
+                .max(Comparator.comparing(c -> populationFitness.get(c)))
                 .get();
     }
 
