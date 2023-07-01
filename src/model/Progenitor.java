@@ -324,6 +324,7 @@ public class Progenitor {
         runResult.setGenerationCount(generation);
         runResult.setFinalFitness(populationFitness.get(bestChromosome));
         runResult.setBestIndividuals(bestIndividuals);
+        runResult.setBestFitnesses(bestFitnesses);
     }
 
     public RunResult getRunResult() {

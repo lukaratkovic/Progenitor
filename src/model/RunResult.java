@@ -8,6 +8,7 @@ public class RunResult {
     private int generationCount;
     private double finalFitness;
     private List<Chromosome> bestIndividuals;
+    private List<Double> bestFitnesses;
 
     RunResult() {}
 
@@ -88,5 +89,13 @@ public class RunResult {
 
     void setMutationTime(long mutationTime) {
         this.mutationTime = mutationTime;
+    }
+
+    public List<Double> getBestFitnesses() {
+        return bestFitnesses;
+    }
+
+    void setBestFitnesses(List<Double> bestFitnesses) {
+        this.bestFitnesses = bestFitnesses;
     }
 }
