@@ -39,7 +39,7 @@ public class ImageGenerationExample {
                 .fitness(ImageGenerationExample::fitness)
                 .elitismCount(2)
                 .selectionMethod(SelectionMethod.TOURNAMENT)
-                .tournamentK(15)
+                .tournamentK(20)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
                 .mutationProbability(0.01)
                 .endCondition(EndCondition.STAGNATE)
