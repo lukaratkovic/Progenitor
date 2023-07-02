@@ -51,7 +51,7 @@ public class Chromosome {
      * @return new instance of Chromosome
      */
     public Chromosome clone(){
-        return new Chromosome(genes);
+        return new Chromosome(genes.stream().map(g -> g.clone()).toList());
     }
 
     /**
