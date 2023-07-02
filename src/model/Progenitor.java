@@ -379,7 +379,6 @@ public class Progenitor {
         return Rand.rand.ints(0, population.size()-1)
                 .distinct()
                 .limit(tournamentK)
-                .parallel()
                 .mapToObj(population::get)
                 .max(Comparator.comparing(c -> populationFitness.get(c)))
                 .get();
