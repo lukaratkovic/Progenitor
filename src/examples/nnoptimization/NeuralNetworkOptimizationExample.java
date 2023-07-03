@@ -16,29 +16,36 @@ public class NeuralNetworkOptimizationExample {
     public static final String VENV_PATH = "example_files/NeuralNetworkOptimizationExample/venv/Scripts/python.exe";
     public static void main(String[] args) {
         IntegerValueGene batchSize = new IntegerValueGene(8, 1025);
-        DecimalValueGene learnRate = new DecimalValueGene(0.0001, 0.1);
-        DecimalValueGene momentum = new DecimalValueGene(0.0, 1.0);
+        DecimalValueGene learnRate = new DecimalValueGene(0.0001, 0.01);
+        DecimalValueGene momentum = new DecimalValueGene(0.5, 1.0);
         Chromosome c = new Chromosome(Arrays.asList(batchSize, learnRate, momentum));
 
         Progenitor progenitor = new Progenitor.Builder(c)
-                .populationSize(10)
+                .populationSize(20)
                 .fitness(NeuralNetworkOptimizationExample::fitness)
-                .elitismCount(1)
+                .elitismCount(2)
                 .selectionMethod(SelectionMethod.ROULETTE)
                 .crossoverMethod(CrossoverMethod.UNIFORM)
-                .mutationProbability(0.01)
+                .mutationProbability(0.05)
                 .endCondition(EndCondition.MAX_GENERATIONS)
-                .maxGenerations(10)
+                .maxGenerations(50)
                 .build();
 
         progenitor.run();
 
+        // Get run results
         RunResult res = progenitor.getRunResult();
-        System.out.println(res);
+        // Print run statistics
+        res.print();
+        // Output best hyperparameters
         Chromosome best = res.getBestChromosome();
         System.out.println("Batch size: "+best.getGenes().get(0).getValue().toString());
         System.out.println("learn_rate: "+best.getGenes().get(1).getValue().toString());
         System.out.println("momentum: "+best.getGenes().get(2).getValue().toString());
+        // Output a list of generation-fitness values
+        for (int i = 0; i < res.getGenerationCount(); i++) {
+            System.out.println(i+": "+res.getBestFitnesses().get(i));
+        }
     }
 
     public static Double fitness(Chromosome c){
@@ -47,6 +54,7 @@ public class NeuralNetworkOptimizationExample {
                 c.getGenes().get(1).getValue().toString(),
                 c.getGenes().get(2).getValue().toString()
         };
+
         try{
             ProcessBuilder pb = new ProcessBuilder(pythonCommand);
             Process process = pb.start();
